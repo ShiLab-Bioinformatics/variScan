@@ -27,8 +27,8 @@ get_abs_path() {
 }
 
 # --- 1. Check for correct number of arguments ---
-if [ "$#" -ne 3 ]; then
-    echo "Usage: $0 <file1.fastq.gz> <file2.fastq.gz> <library.csv>"
+if [ "$#" -ne 4 ]; then
+    echo "Usage: $0 <file1.fastq.gz> <file2.fastq.gz> <library.csv> <output.xlsx>"
     exit 1
 fi
 
