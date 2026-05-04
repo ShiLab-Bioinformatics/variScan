@@ -9,8 +9,8 @@ import "bufio"
 import "time"
 import "encoding/binary"
 
-var no_workers int
-const workers=12
+const verbose=false
+var workers int
 
 type chanRes struct{
   rname string
@@ -56,7 +56,7 @@ func make_alike_seq_index(csv *util.Qfile, removeRepeatSeq bool)(ret alike_seq_i
     no_chrs = append(no_chrs, false)
     if max_seqlen < len(qnames[0]) { max_seqlen = len(qnames[0]) }
   }
-  println("NUM_HEAD_SEQ",nseq)
+  if verbose{println("NUM_HEAD_SEQ",nseq)}
 
   for rii:=0; rii < 19999; rii++{
     rseq, OK := refseqs[rii]
@@ -113,6 +113,7 @@ func main(){
   flag.StringVar(&lib_fasta,"lib","","CSV file containing reference sequences (ref_seq,name).")
   flag.BoolVar(&removeRepeatSeq,"removerep",false,"Remove repeating sequences from the CSV library reference file. Only keep the last copy in file.")
   flag.BoolVar(&is_R2,"modeR2",false,"The input reads are from R2 fastq (i.e., needs reverse for comparison).")
+  flag.IntVar(&workers,"threads",8,"Number of threads for running the alignment.")
   flag.Parse()
 
   old_res_map := make(map[string]bool)
@@ -188,9 +189,7 @@ func run_job(r1, lib *util.Qfile, removeRepeatSeq, is_R2 bool, ofp  *bufio.Write
        newfl = strings.Split(strings.TrimSpace(fl) ," ")[1]
        qseq := newfl
        if is_R2 { qseq,_ = util.ReverseRead(qseq,"") }
-       //println("WRNT_CHR",my_worker, " INCH_LEN",len(inchs[my_worker]))
        inchs[my_worker] <- jobdef(qseq)
-       //println("WRNT_FIN",my_worker)
     }else{ end_workers++ }
     if end_workers == 1+workers{break}
 
@@ -224,8 +223,7 @@ func run_job(r1, lib *util.Qfile, removeRepeatSeq, is_R2 bool, ofp  *bufio.Write
     }
     tp1 := time.Now()
 
-    //currentPos, _ := ofp.Seek(0, io.SeekCurrent)
-    println("RUN-Nread", run_no," TP_chan", tp0.Sub(tps), "  TP_write", tp1.Sub(tp0))
+    if verbose {println("RUN-Nread", run_no," TP_chan", tp0.Sub(tps), "  TP_write", tp1.Sub(tp0))}
     my_worker++
   }
   fmt.Println("SCREEN_TASK_ALL_FINISHED")
@@ -263,9 +261,7 @@ func match_simple(q,r string,st,minM int)( ma,mm int ){
 
 func worker(jobin chan jobdef, jobout chan jobres, refseq1 string,max_lib_no int, alike_index alike_seq_index, novalid_chrs int, no_chrs []bool, no_seqs_for_seqs []int){
     for{
-        //println("WAIT_NEXT_JOB")
         job, hasmore := <-jobin
-//        println("HASHAS",hasmore, job,"NOW HAS",len(jobin))
         if ! hasmore{break}
         one_read_match(refseq1,max_lib_no, alike_index, job, novalid_chrs, no_chrs, no_seqs_for_seqs, jobout)
     }
@@ -413,7 +409,6 @@ func alike_match_by_seqs(q string, alike_index alike_seq_index, max_lib_no int, 
   best_match_start_at_chros = make(map[int]int)
   best_matched_no = make(map[int]int)
   best_mismatched_no = make(map[int]int)
-//println("STTEST ", len(alike_index.seqs))
 
   for _,Rno := range seq_nos{
     Rseq := alike_index.seqs[Rno]

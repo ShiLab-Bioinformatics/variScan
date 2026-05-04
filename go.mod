@@ -1,3 +1,3 @@
 module github.com/ShiLab-Bioinformatics/variScan
 
-go 1.24.3
+go 1.18
