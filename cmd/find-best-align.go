@@ -156,8 +156,7 @@ func main(){
 }
 
 func run_job(r1, lib *util.Qfile, removeRepeatSeq, is_R2 bool, ofp  *bufio.Writer){
-  alike_index, max_lib_no, refseq1, no_chrs, namemap := make_alike_seq_index(lib, removeRepeatSeq)
-  _=namemap
+  alike_index, max_lib_no, refseq1, no_chrs, _ := make_alike_seq_index(lib, removeRepeatSeq)
 
   novalid_chrs :=0
   for _, nov := range no_chrs{

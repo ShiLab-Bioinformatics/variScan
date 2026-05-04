@@ -175,7 +175,7 @@ func main(){
             chro1 = seqnames[high_chros[outi]]
             if high_r1_refstart > 32767{ high_r1_refstart = high_r1_refstart-65536 }
             if high_r2_refstart > 32767{ high_r2_refstart = high_r2_refstart-65536 }
-            fmt.Printf("READ %s has_score %d mapped_loc_R1_R2 %d %d rlen %d total_num_mapped_sequences %d mapped_to %s num_MM_R1_R2 %d %d [%s]\n", rname, high_score, high_r1_refstart, high_r2_refstart, rlen, high_occurance, chro1, mm_R1, mm_R2, "ONLY_POSITIVE_CONSIDERED")
+            fmt.Printf("READ %s has_score %d mapped_loc_R1_R2 %d %d rlen %d total_num_mapped_sequences %d mapped_to %s num_MM_R1_R2 %d %d [%s]\n", rname, high_score, high_r1_refstart, high_r2_refstart, rlen, high_occurance, strings.ReplaceAll(chro1," ","_"), mm_R1, mm_R2, "ONLY_POSITIVE_CONSIDERED")
          }
          if len(high_chros) <1{ fmt.Printf("READ %s has NO_results\n", rname) }
       }

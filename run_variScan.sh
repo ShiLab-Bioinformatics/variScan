@@ -36,6 +36,7 @@ fi
 R1_RAW="$1"
 R2_RAW="$2"
 LIB_RAW="$3"
+OUTPUT_RAW="$4"
 
 # --- 2. Check existence and convert to absolute paths ---
 # We check existence first, then convert.
@@ -50,6 +51,7 @@ done
 R1="$(get_abs_path "$R1_RAW")"
 R2="$(get_abs_path "$R2_RAW")"
 LIB="$(get_abs_path "$LIB_RAW")"
+OUTPUT="$(get_abs_path "$OUTPUT_RAW")"
 
 # --- 3. Output status ---
 echo -e "R1 Path:  ${PURPLE}$R1${NC}"
@@ -74,6 +76,8 @@ echo -e "Running End Matching..."
 $SCRIPTDIR/bin/match-two-ends -lib "$LIB" -rlen $MAX_READ_LENGTH -maxMM $MAX_MISMATCH -binf1  $tempfile.Tmp.R1.bin  -binf2  $tempfile.Tmp.R2.bin  -R1  <( gzip -cd "$R1" ) -R2 <( gzip -cd "$R2" ) |gzip -1 -c > $tempfile.Tmp.restxt.gz
 
 echo -e "Creating Spreadsheets..."
+gzip -cd $tempfile.Tmp.restxt.gz | $SCRIPTDIR/bin/build-xlsx "$LIB" "$OUTPUT"
+
 echo -e "${PURPLE}== Pipeline Complete ==${NC}"
 
 rm -f $tempfile.Tmp.*
