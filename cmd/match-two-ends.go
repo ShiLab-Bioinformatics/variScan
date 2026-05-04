@@ -12,7 +12,9 @@ import "sort"
 import "os"
 
 var max_MM int
+const verbose = false
 const reportAllBest = true
+
 func main(){
     var binf1, binf2, r1f, r2f, libf string
     var rlen, nchros int
@@ -39,7 +41,7 @@ func main(){
     }
     libcsv.Close()
     nchros = len(seqnames)
-    println("NCHROS=",nchros)
+    if verbose {println("NCHROS=",nchros)}
 
     unit_size := rlen + 8*nchros
     if unit_size<1{panic("No rlen nor chros are given")}
@@ -144,9 +146,6 @@ func main(){
             if score1v[0]<1 || score2v[0]<1 {continue}
             score1 := score1v[0]
             score2 := score2v[0]
-            /*if seq1no == 2476 || seq1no == 2404{
-               println(seq1no, score1, score2, high_score, high_occurance, score1v[2]+score2v[2])
-            }*/
             my_score := score2 + score1
             if my_score > high_score || ( my_score == high_score && high_total_mm > score1v[2]+score2v[2]){
                high_chros = make([]int,1)
@@ -178,5 +177,5 @@ func main(){
    }
    binfps[0].Close()
    binfps[1].Close()
-   println("ALL_MATCHING_TASK_FINISHED")
+   fmt.Println("ALL_MATCHING_TASK_FINISHED")
 }

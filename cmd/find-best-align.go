@@ -7,10 +7,12 @@ import "strings"
 import "os"
 import "bufio"
 import "time"
+import "bytes"
 import "encoding/binary"
 
 const verbose=false
 var workers int
+var max_read_len int
 
 type chanRes struct{
   rname string
@@ -114,8 +116,10 @@ func main(){
   flag.BoolVar(&removeRepeatSeq,"removerep",false,"Remove repeating sequences from the CSV library reference file. Only keep the last copy in file.")
   flag.BoolVar(&is_R2,"modeR2",false,"The input reads are from R2 fastq (i.e., needs reverse for comparison).")
   flag.IntVar(&workers,"threads",8,"Number of threads for running the alignment.")
+  flag.IntVar(&max_read_len,"rlen",-1,"Maximum read length in FASTQ files.")
   flag.Parse()
 
+  if max_read_len <1{panic("Maximum read length must be specified!")}
   old_res_map := make(map[string]bool)
   Qold, cnterr := util.Qopen(old_result)
   if cnterr == nil{
@@ -187,6 +191,7 @@ func run_job(r1, lib *util.Qfile, removeRepeatSeq, is_R2 bool, ofp  *bufio.Write
     tps := time.Now()
     if err == nil{
        newfl = strings.Split(strings.TrimSpace(fl) ," ")[1]
+      if max_read_len < len(newfl){panic("Maximum read length is not sufficient!")}
        qseq := newfl
        if is_R2 { qseq,_ = util.ReverseRead(qseq,"") }
        inchs[my_worker] <- jobdef(qseq)
@@ -433,6 +438,10 @@ func alike_match_by_seqs(q string, alike_index alike_seq_index, max_lib_no int, 
 
 func add_one_rec(ofp  *bufio.Writer, q string){
   qbyte := []byte(q)
+  if len(qbyte) <max_read_len{
+    padding := bytes.Repeat([]byte{0x20}, max_read_len-len(qbyte))
+    qbyte = append(qbyte, padding...)
+  }
   ofp.Write(qbyte)
 }
 

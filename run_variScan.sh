@@ -1,6 +1,19 @@
-#!/bin/sh
+#!/bin/bash
 
-tempfile=$(mktemp -t temp-DBPZ-variScan.XXXXXXXXXXXX)
+if [ -z "$BASH_VERSION" ]; then
+    echo "Error: This script must be run in the BASH shell." >&2
+    exit 1
+fi
+
+MAX_READ_LENGTH=151
+MAX_MISMATCH=3
+tempfile=$(mktemp -t temp-DBPZ-variScan.XXXXXXXXXXXX )
+
+if [[ ${#tempfile} -le 20 ]]; then
+    echo "Error: the 'mktemp' command isn't available." >&2
+    exit 1
+fi
+
 SCRIPTDIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 WORKDIR=$( realpath . )
 PURPLE='\033[0;35m'
@@ -54,13 +67,17 @@ do
 
      uniqfile=$tempfile.uq.reads.gz
      gzip -cd $fqgz |awk 'NR%4==2' |sort -S 15G  |uniq -c  |gzip -1 -c > $uniqfile
-     $SCRIPTDIR/bin/find-best-align -R1 <( gzip -cd $uniqfile ) -lib "$LIB" $mr2 -outfile $tempfile.R$rno.bin 
+     $SCRIPTDIR/bin/find-best-align -rlen $MAX_READ_LENGTH -R1 <( gzip -cd $uniqfile ) -lib "$LIB" $mr2 -outfile $tempfile.R$rno.bin 
 done
 
 echo -e "Running End Matching..."
-$SCRIPTDIR/bin/match-two-ends -lib "$LIB"
+$SCRIPTDIR/bin/match-two-ends -lib "$LIB" -rlen $MAX_READ_LENGTH -maxMM $MAX_MISMATCH -binf1  $tempfile.R1.bin  -binf2  $tempfile.R2.bin  -R1  <( gzip -cd "$R1" ) -R2 <( gzip -cd "$R2" )
+
 
 echo -e "${PURPLE}== Pipeline Complete ==${NC}"
 
 
 rm -f $tempfile.*
+
+
+
