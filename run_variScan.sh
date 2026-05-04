@@ -7,7 +7,7 @@ fi
 
 MAX_READ_LENGTH=151
 MAX_MISMATCH=3
-tempfile=$(mktemp -t temp-DBPZ-variScan.XXXXXXXXXXXX )
+tempfile=$(mktemp -t temp-DBPZ-variScan.XXXXXXXXXXXX -u )
 
 if [[ ${#tempfile} -le 20 ]]; then
     echo "Error: the 'mktemp' command isn't available." >&2
@@ -65,19 +65,15 @@ do
      var_name="R${rno}"
      fqgz="${!var_name}"
 
-     uniqfile=$tempfile.uq.reads.gz
+     uniqfile=$tempfile.Tmp.uq.reads.gz
      gzip -cd $fqgz |awk 'NR%4==2' |sort -S 15G  |uniq -c  |gzip -1 -c > $uniqfile
-     $SCRIPTDIR/bin/find-best-align -rlen $MAX_READ_LENGTH -R1 <( gzip -cd $uniqfile ) -lib "$LIB" $mr2 -outfile $tempfile.R$rno.bin 
+     $SCRIPTDIR/bin/find-best-align -rlen $MAX_READ_LENGTH -R1 <( gzip -cd $uniqfile ) -lib "$LIB" $mr2 -outfile $tempfile.Tmp.R$rno.bin 
 done
 
 echo -e "Running End Matching..."
-$SCRIPTDIR/bin/match-two-ends -lib "$LIB" -rlen $MAX_READ_LENGTH -maxMM $MAX_MISMATCH -binf1  $tempfile.R1.bin  -binf2  $tempfile.R2.bin  -R1  <( gzip -cd "$R1" ) -R2 <( gzip -cd "$R2" )
+$SCRIPTDIR/bin/match-two-ends -lib "$LIB" -rlen $MAX_READ_LENGTH -maxMM $MAX_MISMATCH -binf1  $tempfile.Tmp.R1.bin  -binf2  $tempfile.Tmp.R2.bin  -R1  <( gzip -cd "$R1" ) -R2 <( gzip -cd "$R2" ) |gzip -1 -c > $tempfile.Tmp.restxt.gz
 
-
+echo -e "Creating Spreadsheets..."
 echo -e "${PURPLE}== Pipeline Complete ==${NC}"
 
-
-rm -f $tempfile.*
-
-
-
+rm -f $tempfile.Tmp.*

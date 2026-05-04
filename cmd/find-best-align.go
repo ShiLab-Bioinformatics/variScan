@@ -231,7 +231,7 @@ func run_job(r1, lib *util.Qfile, removeRepeatSeq, is_R2 bool, ofp  *bufio.Write
     if verbose {println("RUN-Nread", run_no," TP_chan", tp0.Sub(tps), "  TP_write", tp1.Sub(tp0))}
     my_worker++
   }
-  fmt.Println("SCREEN_TASK_ALL_FINISHED")
+  fmt.Println("Finished Alignment of Read", util.IfElseInt(is_R2,2,1) ,"FASTQ.gz File.")
 }
 
 func match_simple(q,r string,st,minM int)( ma,mm int ){

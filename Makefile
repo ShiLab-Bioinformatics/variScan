@@ -11,6 +11,7 @@ build:
 	@mkdir -p $(BINARY_DIR)
 	go build -o $(BINARY_DIR)/find-best-align cmd/find-best-align.go
 	go build -o $(BINARY_DIR)/match-two-ends cmd/match-two-ends.go
+	go build -o $(BINARY_DIR)/build-xlsx cmd/build-xlsx.go
 
 # Clean up binaries
 clean:

@@ -8,6 +8,7 @@ import "strings"
 import "encoding/binary"
 import "strconv"
 import "fmt"
+import "bytes"
 import "sort"
 import "os"
 
@@ -26,7 +27,7 @@ func main(){
     flag.StringVar(&r1f,"R1","","fastq file for R1 (zcat it if necessary)")
     flag.StringVar(&r2f,"R2","","fastq file for R2 (zcat it if necessary)")
 
-    flag.IntVar(&rlen,"rlen",0,"Read length (must be the same for all reads)")
+    flag.IntVar(&rlen,"rlen",0,"Maximum read length (must be the same as rlen for running find_best_align)")
     flag.IntVar(&max_MM,"maxMM",0,"Alloed max mismatch at any end (the other end can have many mismatches)")
 
     flag.Parse()
@@ -103,7 +104,12 @@ func main(){
          for ri := 1; ri <=2; ri++{
             rseq := q1seq
             if ri==2{rseq = q2seq}
-            hashv := sha1.Sum([]byte(rseq))
+            qbyte := []byte(rseq)
+            if len(qbyte) < rlen{
+               padding := bytes.Repeat([]byte{0x20}, rlen-len(qbyte))
+               qbyte = append(qbyte, padding...)
+            }
+            hashv := sha1.Sum(qbyte)
             fpos, OK := BinOffsets[ri-1][hashv]
             if ! OK{panic("A read isn't found "+rseq +"   Rno  "+strconv.Itoa(ri))}
 
