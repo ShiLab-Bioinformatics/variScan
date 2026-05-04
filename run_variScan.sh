@@ -18,7 +18,6 @@ SCRIPTDIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 WORKDIR=$( realpath . )
 PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
-echo -e "${PURPLE}== variScan Pipeline Starting ==${NC}"
 
 # --- Function to convert to absolute path ---
 get_abs_path() {
@@ -28,9 +27,15 @@ get_abs_path() {
 
 # --- 1. Check for correct number of arguments ---
 if [ "$#" -ne 4 ]; then
+    echo
     echo "Usage: $0 <file1.fastq.gz> <file2.fastq.gz> <library.csv> <output.xlsx>"
+    echo
+    echo "The input CSV file must contain exactly two columns, ordered as reference sequence then sequence name. Please ensure the file does not include a header row or any column titles. All values should be provided as plain text without the use of quotation marks."
+    echo
     exit 1
 fi
+
+echo -e "${PURPLE}== variScan Pipeline Starting ==${NC}"
 
 # Assign arguments to variables
 R1_RAW="$1"
