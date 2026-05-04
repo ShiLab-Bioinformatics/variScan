@@ -62,6 +62,10 @@ OUTPUT="$(get_abs_path "$OUTPUT_RAW")"
 echo -e "R1 Path:  ${PURPLE}$R1${NC}"
 echo -e "R2 Path:  ${PURPLE}$R2${NC}"
 echo -e "Library:  ${PURPLE}$LIB${NC}"
+echo -e "Output :  ${PURPLE}$OUTPUT${NC}"
+echo
+echo -e "Temp files:  ${PURPLE}$tempfile.Tmp.*${NC}"
+echo
 
 
 echo -e "\nRunning Alignment..."
