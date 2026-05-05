@@ -15,11 +15,20 @@ The only entry for running variScan is `run_variScan.sh`.
 
 The input files `file1.fastq.gz` and `file2.fastq.gz` must correspond to the first and second reads of each paired-end read, respectively. Reads must be generated using a stranded protocol (forward–reverse orientation). 
 
-Referece sequences are provided in `library.csv`. This file must contain exactly two columns: the reference sequence (first column) and the sequence name (second column). Do not include a header row or column titles. All values should be plain text without quotation marks.
+Referece sequences are provided in input file `library.csv`. This file must contain exactly two columns: the reference sequence (first column) and the sequence name (second column). Do not include a header row or column titles. All values should be plain text without quotation marks.
 
 The output spreadsheet is written in `output.xlsx`. 
+
+Below is an example of `library.csv`.
+```
+ATCGGTCAATCGTAGCTAATCGGTCAATCGTAGCTAATCGGTCAATCGTAGCTA,seq001
+TACGGTCAATCGTAGCTAATCGGTCAATCGTAGCTAATCGGTCAATCGTAGCTT,seq002
+CCCGGTCAATCGTAGCTAATCGGTCAATCGTAGCTAATCGGTCAATCGTAGCTG,seq003
+......
+```
 
 ## Read alignment
 Each read in a pair is aligned against all reference sequences without allowing insertions or deletions (indels). A read pair is considered mappable if at least one end has three or fewer mismatches.
 
 For each read pair, the reference sequence with the highest total number of matched bases across both ends is selected as the __final alignment target__. If multiple equally optimal alignments are found, the read pair is reported as unmappable.
+
