@@ -1,4 +1,5 @@
 export CGO_ENABLED=0
+VARIVER=0.1.0
 
 # Variables
 BINARY_DIR=bin
@@ -23,3 +24,8 @@ clean:
 # This ensures your dependencies are synced before building
 tidy:
 	go mod tidy
+
+release:
+	mkdir ~/temp/variScan-$(VARIVER)
+	cp -r bin  ~/temp/variScan-$(VARIVER)
+	cp README.md LICENSE run_variScan.sh   ~/temp/variScan-$(VARIVER)
