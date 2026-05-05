@@ -1,5 +1,25 @@
 # variScan
-A bioinformatics tool to efficiently map sequencing reads to a reference sequence library.
+__variScan__ is a bioinformatics tool developed in the Shi Lab at the Monash Biomedicine Discovery Institute for efficient mapping of sequencing reads to a reference sequence library.
 
+Unlike conventional read aligners, variScan is specifically designed to map read pairs to the most similar reference among thousands of highly similar, short reference sequences (typically hundreds of bases in length).
 
-<https://www.monash.edu/discovery-institute>
+## Download and install
+Binary releases of variScan are available from the GitHub repository: <https://github.com/ShiLab-Bioinformatics/variScan>. The program can be installed by simply decompressing the downloaded package. 
+
+variScan currently supports x86-64 Linux systems and requires `/bin/bash`. If `bash` is located elsewhere on your system, update the first line in `run_variScan.sh` to point to the correct path.
+
+## Running variScan
+The only entry for running variScan is `run_variScan.sh`. 
+
+`Usage: ./run_variScan.sh <IN:file1.fastq.gz> <IN:file2.fastq.gz> <IN:library.csv> <OUT:output.xlsx>`
+
+The input files `file1.fastq.gz` and `file2.fastq.gz` must correspond to the first and second reads of each paired-end read, respectively. Reads must be generated using a stranded protocol (forward–reverse orientation). 
+
+Referece sequences are provided in `library.csv`. This file must contain exactly two columns: the reference sequence (first column) and the sequence name (second column). Do not include a header row or column titles. All values should be plain text without quotation marks.
+
+The output spreadsheet is written in `output.xlsx`. 
+
+## Read alignment
+Each read in a pair is aligned against all reference sequences without allowing insertions or deletions (indels). A read pair is considered mappable if at least one end has three or fewer mismatches.
+
+For each read pair, the reference sequence with the highest total number of matched bases across both ends is selected as the __final alignment target__. If multiple equally optimal alignments are found, the read pair is reported as unmappable.
