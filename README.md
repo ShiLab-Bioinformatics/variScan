@@ -3,7 +3,7 @@ __variScan__ is a bioinformatics tool developed in the Shi Lab at the Monash Bio
 
 Unlike conventional read aligners, variScan is specifically designed to map read pairs to the most similar reference among thousands of highly similar, short reference sequences (typically hundreds of bases in length).
 
-## Download and install
+## Download and installation
 Binary releases of variScan are available from the GitHub repository: <https://github.com/ShiLab-Bioinformatics/variScan>. The program can be installed by simply decompressing the downloaded package. 
 
 variScan currently supports x86-64 Linux systems and requires `/bin/bash`. If `bash` is located elsewhere on your system, update the first line in `run_variScan.sh` to point to the correct path.
@@ -27,8 +27,9 @@ CCCGGTCAATCGTAGCTAATCGGTCAATCGTAGCTAATCGGTCAATCGTAGCTG,seq003
 ......
 ```
 
-## Read alignment
-Each read in a pair is aligned against all reference sequences without allowing insertions or deletions (indels). A read pair is considered mappable if at least one end has three or fewer mismatches.
+## Read alignment rules
+Each read in a pair is aligned to all reference sequences without allowing insertions or deletions (indels). Alignments are evaluated at all possible positions, including partial overlaps. For each read–reference pair, the optimal alignment position is defined as the one with the highest number of matched bases.
 
-For each read pair, the reference sequence with the highest total number of matched bases across both ends is selected as the __final alignment target__. If multiple equally optimal alignments are found, the read pair is reported as unmappable.
+A read pair is considered mappable if, at its respective optimal alignment position, at least one read end has three or fewer mismatches.
 
+For each read pair, the reference sequence with the highest combined number of matched bases across both ends (at their respective optimal positions) is selected as the __final alignment target__. If multiple equally optimal targets are identified, the read pair is reported as unmappable.
