@@ -25,6 +25,7 @@ type chanRes struct{
 type alike_seq_index struct{
    seqs map[int]string
    ints [2][4][][]int
+   shrotest_refseq_len int
 }
 
 func make_alike_seq_index(csv *util.Qfile, removeRepeatSeq bool)(ret alike_seq_index, nseq int, refseq1 string, no_chrs[]bool, name_chros map[int]string){
@@ -32,6 +33,7 @@ func make_alike_seq_index(csv *util.Qfile, removeRepeatSeq bool)(ret alike_seq_i
   seqreverse := make(map[string]int)
   name_chros = make(map[int]string)
   max_seqlen := 0
+  min_seqlen := 999999999
   nseq = 0
   no_chrs = make([]bool, 1, 1)
   no_chrs [0] = true // chr_no starts 1
@@ -57,8 +59,10 @@ func make_alike_seq_index(csv *util.Qfile, removeRepeatSeq bool)(ret alike_seq_i
     seqreverse[qnames[0]] = nseq
     no_chrs = append(no_chrs, false)
     if max_seqlen < len(qnames[0]) { max_seqlen = len(qnames[0]) }
+    if min_seqlen > len(qnames[0]) { min_seqlen = len(qnames[0]) }
   }
   if verbose{println("NUM_HEAD_SEQ",nseq)}
+  ret.shrotest_refseq_len = min_seqlen
 
   for rii:=0; rii < 19999; rii++{
     rseq, OK := refseqs[rii]
@@ -190,7 +194,8 @@ func run_job(r1, lib *util.Qfile, removeRepeatSeq, is_R2 bool, ofp  *bufio.Write
     tps := time.Now()
     if err == nil{
        newfl = strings.Split(strings.TrimSpace(fl) ," ")[1]
-      if max_read_len < len(newfl){panic("Maximum read length is not sufficient!")}
+       if max_read_len < len(newfl){panic("Maximum read length is not sufficient!")}
+       if alike_index.shrotest_refseq_len <= len(newfl){panic("A read has the same length or is longer than the shortest reference sequence!")}
        qseq := newfl
        if is_R2 { qseq,_ = util.ReverseRead(qseq,"") }
        inchs[my_worker] <- jobdef(qseq)
@@ -327,7 +332,7 @@ func alike_match_by_ints(q, refseq1 string, alike_index alike_seq_index, max_lib
       var stopped_in_middle bool
       for qidx, qbase := range q_sub{
         ridx := rs + qidx
-	remain_len := len(q_sub)-qidx
+        remain_len := len(q_sub)-qidx
 
         if qbase == 'A'{
           qbaseint = 0

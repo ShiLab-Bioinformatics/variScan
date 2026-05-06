@@ -15,7 +15,7 @@ The only entry for running variScan is `run_variScan.sh`.
 
 The input files `file1.fastq.gz` and `file2.fastq.gz` must correspond to the first and second reads of each paired-end read, respectively. Reads must be generated using a stranded protocol (forward–reverse orientation). 
 
-Referece sequences are provided in input file `library.csv`. This file must contain exactly two columns: the reference sequence (first column) and the sequence name (second column). Do not include a header row or column titles. All values should be plain text without quotation marks.
+Referece sequences are provided in input file `library.csv`. This file must contain exactly two columns: the reference sequence (first column) and the sequence name (second column). Do not include a header row or column titles. All values should be plain text without quotation marks. All the reference sequences must be longer than the reads in the two fastq.gz input.
 
 The output spreadsheet is written in `output.xlsx`. 
 
