@@ -33,8 +33,12 @@ The following parameters can be adjusted by editing `run_variScan.sh`:
 1. `MAX_MISMATCH`: Maximum number of mismatched bases permitted. At least one read in each pair must have a number of mismatches ≤ this threshold. Default: `3`.
 
 ## Read alignment rules
-Each read in a pair is aligned to all reference sequences without allowing insertions or deletions (indels). Alignments are evaluated at all possible positions, including partial overlaps. For each read–reference pair, the optimal alignment position is defined as the one with the highest number of matched bases.
+Each read in a pair is aligned against every reference sequence. Insertions and deletions (**indels**) are not allowed. Alignments are evaluated at all possible positions, including partial overlaps.
 
-A read pair is considered mappable if, at its respective optimal alignment position, at least one read end has three or fewer mismatches.
+For each read–reference combination, the **optimal alignment position** is the position with the highest number of matched bases.
 
-For each read pair, the reference sequence with the highest combined number of matched bases across both ends (at their respective optimal positions) is selected as the __final alignment target__. If multiple equally optimal targets are identified, the read pair is reported as unmappable.
+A read pair is considered **mappable** if, at its optimal alignment position, **at least one read end has three or fewer mismatches**.
+
+For each read pair, the final alignment target is the reference sequence with the highest combined number of matched bases across both read ends, using their respective optimal alignment positions.
+
+If multiple reference sequences are equally optimal, the read pair is reported as **unmappable**.
