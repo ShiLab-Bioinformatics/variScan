@@ -38,6 +38,6 @@ For each paired-end read, R1 is used as provided, while R2 is first **reverse-co
 
 During comparison, only base substitutions (mismatches) are allowed—insertions and deletions (indels) are not considered. Each read is evaluated at all possible positions along a reference, including partial overlaps, and the position with the highest number of matching bases is chosen as its best alignment.
 
-For a given reference sequence, a read pair is considered **mappable to that reference** only if at least one of the two reads has no more than `MAX_MISMATCH` mismatches (default: 3) at its best alignment position. If this condition is not met, the read pair is not considered for that reference.
+For a given reference sequence, a read pair is considered **mappable to that reference** only if at least one of the two reads has no more than `MAX_MISMATCH` mismatches (default: 3) at its best alignment position. If this condition is not met, that reference is not considered for the read pair.
 
-Among all reference sequences that pass this filter, variScan calculates the total number of matched bases across both reads (using their respective best alignment positions). The read pair is assigned to the reference with the highest total match count. If two or more references achieve the same best score, the read pair is reported as unmappable to avoid ambiguous assignments.
+Among all reference sequences that pass this filter, variScan calculates the total number of matched bases across both reads (using their respective best alignment positions). The read pair is assigned to the reference with the highest total match count. If two or more references achieve the same highest total match count, the read pair is reported as unmappable to avoid ambiguous assignments.
