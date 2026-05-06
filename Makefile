@@ -26,6 +26,7 @@ tidy:
 	go mod tidy
 
 release:
+	rm -rf ~/temp/variScan-$(VARIVER) ~/temp/variScan-$(VARIVER)-binary-Linux-x86_64.tar.gz 
 	mkdir ~/temp/variScan-$(VARIVER)
-	cp -r bin  ~/temp/variScan-$(VARIVER)
-	cp README.md LICENSE run_variScan.sh   ~/temp/variScan-$(VARIVER)
+	cp -r bin ~/temp/variScan-$(VARIVER)
+	cp README.md LICENSE run_variScan.sh  ~/temp/variScan-$(VARIVER)
