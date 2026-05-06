@@ -1,20 +1,25 @@
 #!/bin/bash
 
+# Editable parameters
+THREADS=8
+MAX_READ_LENGTH=151
+MAX_MISMATCH=3
+
+
+# Testing environment
 if [ -z "$BASH_VERSION" ]; then
     echo "Error: This script must be run in the BASH shell." >&2
     exit 1
 fi
 
-THREADS=8
-MAX_READ_LENGTH=151
-MAX_MISMATCH=3
+# Making temp file name
 tempfile=$(mktemp -t temp-DBPZ-variScan.XXXXXXXXXXXX -u )
-
 if [[ ${#tempfile} -le 20 ]]; then
     echo "Error: the 'mktemp' command isn't available." >&2
     exit 1
 fi
 
+# Main script
 SCRIPTDIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 WORKDIR=$( realpath . )
 PURPLE='\033[0;35m'
