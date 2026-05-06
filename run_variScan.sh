@@ -5,6 +5,7 @@ if [ -z "$BASH_VERSION" ]; then
     exit 1
 fi
 
+THREADS=8
 MAX_READ_LENGTH=151
 MAX_MISMATCH=3
 tempfile=$(mktemp -t temp-DBPZ-variScan.XXXXXXXXXXXX -u )
@@ -78,7 +79,7 @@ do
 
      uniqfile=$tempfile.Tmp.uq.reads.gz
      gzip -cd $fqgz |awk 'NR%4==2' |sort -S 15G  |uniq -c  |gzip -1 -c > $uniqfile
-     $SCRIPTDIR/bin/find-best-align -rlen $MAX_READ_LENGTH -R1 <( gzip -cd $uniqfile ) -lib "$LIB" $mr2 -outfile $tempfile.Tmp.R$rno.bin 
+     $SCRIPTDIR/bin/find-best-align -rlen $MAX_READ_LENGTH -threads $THREADS -R1 <( gzip -cd $uniqfile ) -lib "$LIB" $mr2 -outfile $tempfile.Tmp.R$rno.bin 
 done
 
 echo -e "Running End Matching..."

@@ -27,6 +27,11 @@ CCCGGTCAATCGTAGCTAATCGGTCAATCGTAGCTAATCGGTCAATCGTAGCTG,seq003
 ......
 ```
 
+The following parameters can be adjusted in `run_variScan.sh`:
+-`THREADS`: Number of CPU cores to use. Default: `8`.
+-`MAX_READ_LENGTH`: Maximum allowed read length in the input data. All reads must be ≤ this length. Default: `151`.
+-`MAX_MISMATCH`: Maximum number of mismatched bases permitted. At least one read in each pair must have a number of mismatches ≤ this threshold. Default: `3`.
+
 ## Read alignment rules
 Each read in a pair is aligned to all reference sequences without allowing insertions or deletions (indels). Alignments are evaluated at all possible positions, including partial overlaps. For each read–reference pair, the optimal alignment position is defined as the one with the highest number of matched bases.
 
