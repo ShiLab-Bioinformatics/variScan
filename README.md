@@ -32,7 +32,7 @@ The following parameters can be adjusted by editing `run_variScan.sh`:
 1. `MAX_READ_LENGTH`: Maximum allowed read length in the input data. All reads must be ≤ this length. Default: `151`.
 1. `MAX_MISMATCH`: Maximum number of mismatched bases permitted. At least one read in each pair must have a number of mismatches ≤ this threshold. Default: `3`.
 
-## How variScan Assigns Reads to References
+## How variScan assigns reads to references
 
 For each paired-end read, R1 is used as provided, while R2 is first **reverse-complemented** so that both reads are in the same orientation as the reference sequences. The two reads are then compared against every reference sequence in the library.
 
