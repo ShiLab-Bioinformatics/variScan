@@ -1,7 +1,7 @@
 # VariantAlign
-__VariantAlign__ is a bioinformatics tool developed in the Shi Lab at the Monash Biomedicine Discovery Institute for efficient mapping of sequencing reads to a reference sequence library.
+__VariantAlign__ is a bioinformatics tool developed in the Shi Lab at the Monash Biomedicine Discovery Institute for efficient assignment of sequencing read pairs to a reference sequence library.
 
-Unlike conventional read aligners, VariantAlign is specifically designed to map read pairs to the most similar reference among thousands of highly similar, short reference sequences (typically hundreds of bases in length).
+Unlike conventional read aligners, VariantAlign is designed to identify the best-matching reference among thousands of highly similar, short sequences (typically a few hundred bases in length). It is particularly suited for applications where reads are assigned to a library of closely related sequence variants, such as slightly mutated transcript sequences derived from the same gene or transcript.
 
 ## Download and installation
 Binary releases of VariantAlign are available from the GitHub repository: <https://github.com/ShiLab-Bioinformatics/VariantAlign>. The program can be installed by simply decompressing the downloaded package. 
