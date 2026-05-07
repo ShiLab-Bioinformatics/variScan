@@ -58,6 +58,10 @@ for FILE in "$R1_RAW" "$R2_RAW" "$LIB_RAW"; do
     fi
 done
 
+if [[ "$OUTPUT_RAW" != *.xlsx ]]; then
+    OUTPUT_RAW="${OUTPUT_RAW}.xlsx"
+fi
+
 # Convert to absolute paths
 R1="$(get_abs_path "$R1_RAW")"
 R2="$(get_abs_path "$R2_RAW")"
