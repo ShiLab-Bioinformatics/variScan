@@ -6,7 +6,6 @@ import "encoding/csv"
 import "os"
 import "fmt"
 import "strings"
-import "strconv"
 
 func main() {
     qnames := make([]string,0)
@@ -44,7 +43,7 @@ func main() {
     f.SetCellValue("Read-pair Counts", "B1", "Number of read-pairs")
     for qi,qname := range qnames{
         f.SetCellValue("Read-pair Counts", fmt.Sprintf("A%d", qi+2), qname)
-        f.SetCellValue("Read-pair Counts", fmt.Sprintf("B%d", qi+2), strconv.Itoa(counts[qname]))
+        f.SetCellValue("Read-pair Counts", fmt.Sprintf("B%d", qi+2), counts[qname])
     }
     f.SetActiveSheet(index)
     f.DeleteSheet("Sheet1")
