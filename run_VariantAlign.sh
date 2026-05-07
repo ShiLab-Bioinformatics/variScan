@@ -13,7 +13,7 @@ if [ -z "$BASH_VERSION" ]; then
 fi
 
 # Making temp file name
-tempfile=$(mktemp -t temp-DBPZ-variScan.XXXXXXXXXXXX -u )
+tempfile=$(mktemp -t temp-DBPZ-VariantAlign.XXXXXXXXXXXX -u )
 if [[ ${#tempfile} -le 20 ]]; then
     echo "Error: the 'mktemp' command isn't available." >&2
     exit 1
@@ -41,7 +41,7 @@ if [ "$#" -ne 4 ]; then
     exit 1
 fi
 
-echo -e "${PURPLE}== variScan Pipeline Starting ==${NC}"
+echo -e "${PURPLE}== VariantAlign Pipeline Starting ==${NC}"
 
 # Assign arguments to variables
 R1_RAW="$1"
