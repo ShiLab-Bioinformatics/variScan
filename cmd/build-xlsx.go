@@ -1,7 +1,7 @@
 package main
 
 import "github.com/xuri/excelize/v2"
-import "github.com/ShiLab-Bioinformatics/variScan/SCAN/util"
+import "github.com/ShiLab-Bioinformatics/VariantAlign/SCAN/util"
 import "encoding/csv"
 import "os"
 import "fmt"

@@ -1,6 +1,6 @@
 package main
 
-import "github.com/ShiLab-Bioinformatics/variScan/SCAN/util"
+import "github.com/ShiLab-Bioinformatics/VariantAlign/SCAN/util"
 import "flag"
 import "fmt"
 import "strings"

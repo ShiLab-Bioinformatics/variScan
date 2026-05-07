@@ -1,4 +1,4 @@
-module github.com/ShiLab-Bioinformatics/variScan
+module github.com/ShiLab-Bioinformatics/VariantAlign
 
 go 1.24.0
 
