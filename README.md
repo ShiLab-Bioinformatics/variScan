@@ -5,13 +5,13 @@ Unlike conventional read aligners, VariantAlign is designed to identify the best
 
 ## How VariantAlign assigns reads to references
 
-For each paired-end read, R1 is used as provided, while R2 is first **reverse-complemented** so that both reads are in the same orientation as the reference sequences. The two reads are then compared against every reference sequence in the library.
+For each paired-end read, R1 is used as provided, while R2 is first **reverse-complemented** so that both reads are in the same orientation as the reference sequences. The two ends of the read pair are then compared against every reference sequence in the library.
 
-During comparison, only base substitutions (mismatches) are allowed—insertions and deletions (indels) are not considered. Each read is evaluated at all possible positions along a reference, including partial overlaps, and the position with the highest number of matching bases is chosen as its best alignment.
+During comparison, only base substitutions (mismatches) are allowed—insertions and deletions (indels) are not considered. Each end of the read pair is evaluated at all possible positions along a reference, including partial overlaps, and the position with the highest number of matching bases is chosen as its best alignment.
 
-For a given reference sequence, a read pair is considered **mappable to that reference** only if at least one of the two reads has no more than the mismatch threshold (default: 3) at its best alignment position. If this condition is not met, that reference is not considered for the read pair.
+For a given reference sequence, a read pair is considered **mappable to that reference** only if at least one of the two ends has no more mismatched bases than the mismatch threshold (default: 3) at its best alignment position. If this condition is not met, that reference sequence is not considered for the read pair.
 
-Among all reference sequences that pass this filter, VariantAlign calculates the total number of matched bases across both reads (using their respective best alignment positions). The read pair is assigned to the reference with the highest total match count. If two or more references achieve the same highest total match count, the read pair is reported as unmappable to avoid ambiguous assignments.
+Among all reference sequences that pass this filter, VariantAlign calculates the total number of matched bases across both reads (using their respective best alignment positions). The read pair is assigned to the reference with the highest total match count. If two or more reference sequences achieve the same highest total match count, the read pair is reported as unmappable to avoid ambiguous assignments.
 
 ## Download and installation
 Binary releases of VariantAlign are available from the GitHub repository: <https://github.com/ShiLab-Bioinformatics/VariantAlign>. The program can be installed by simply decompressing the downloaded package. 
