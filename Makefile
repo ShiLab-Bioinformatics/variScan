@@ -1,10 +1,8 @@
 export CGO_ENABLED=0
-VARIVER=0.1.0
 
 # Variables
+VARIVER=0.1.0
 BINARY_DIR=bin
-MODULE_NAME=github.com/username/project-name
-GO_FILES=cmd/find-best-align.go cmd/match-two-ends.go
 GOOPT=-ldflags="-s -w"
 
 # Default target: builds everything
@@ -26,7 +24,7 @@ tidy:
 	go mod tidy
 
 release:
-	rm -rf ~/temp/variScan-$(VARIVER) ~/temp/variScan-$(VARIVER)-binary-Linux-x86_64.tar.gz 
-	mkdir ~/temp/variScan-$(VARIVER)
-	cp -r bin ~/temp/variScan-$(VARIVER)
-	cp README.md LICENSE run_variScan.sh  ~/temp/variScan-$(VARIVER)
+	rm -rf ~/temp/VariantAlign-$(VARIVER) ~/temp/VariantAlign-$(VARIVER)-binary-Linux-x86_64.tar.gz 
+	mkdir ~/temp/VariantAlign-$(VARIVER)
+	cp -r bin ~/temp/VariantAlign-$(VARIVER)
+	cp README.md LICENSE run_VariantAlign.sh  ~/temp/VariantAlign-$(VARIVER)
