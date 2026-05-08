@@ -42,12 +42,13 @@ shorter match list directly. This adaptive choice matters because most
 positions are conserved, while a small number of variant positions distinguish
 the references.
 
-For example, suppose the library contains 1,000 reference sequences and five
-read bases are aligned to positions 50-54. At positions 50, 51, and 54, the
-query bases are common in the library, so the program follows the mismatch
-rule: it updates only references that do not have the query base. At positions
-52 and 53, the query bases are rare, so the program follows the match rule: it
-updates only references that do have the query base.
+For example, consider a toy 5-bp read used only to illustrate the counting
+logic. Suppose the library contains 1,000 reference sequences and this 5-bp read
+is aligned to positions 50-54 of a reference sequence. At positions 50, 51, and
+54, the query bases are common in the library, so the program follows the
+mismatch rule: it updates only references that do not have the query base. At
+positions 52 and 53, the query bases are rare, so the program follows the match
+rule: it updates only references that do have the query base.
 
 For one reference sequence, assume the following outcome. At the three
 mismatch-rule positions, the reference mismatches the read at position 51 only.
