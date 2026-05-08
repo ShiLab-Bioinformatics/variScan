@@ -42,15 +42,39 @@ shorter match list directly. This adaptive choice matters because most
 positions are conserved, while a small number of variant positions distinguish
 the references.
 
-For example, suppose the library contains 1,000 reference sequences and the
-read has base `A` aligned to reference position 50. If 970 references also have
-`A` at position 50, updating the matching list would require 970 counter
-updates. It is faster to update only the 30 references that do not have `A` and
-then count the other 970 references as implicit matches. At another position,
-the same read may carry a rare variant base: only 12 references have `T`, while
-988 have another base. In that case, the program updates the 12-reference match
-list directly. Both choices give the same match/mismatch counts, but each uses
-the shorter posting list.
+For example, suppose the library contains 1,000 reference sequences and five
+read bases are aligned to positions 50-54. At positions 50, 51, and 54, the
+query bases are common in the library, so the program follows the mismatch
+rule: it updates only references that do not have the query base. At positions
+52 and 53, the query bases are rare, so the program follows the match rule: it
+updates only references that do have the query base.
+
+For one reference sequence, assume the following outcome. At the three
+mismatch-rule positions, the reference mismatches the read at position 51 only.
+The program therefore stores one explicit mismatch for that reference, and the
+other two mismatch-rule positions are counted as implicit matches. At the two
+match-rule positions, assume the reference appears in the match list at
+position 52 but not at position 53. The program therefore stores one explicit
+match from the match-rule positions. The total matched count is:
+
+```text
+explicit matches from match-rule positions
++ implicit matches from mismatch-rule positions
+= 1 + (3 - 1)
+= 3 matched bases
+```
+
+The read overlaps five reference bases in this example, so the total mismatch
+count is:
+
+```text
+aligned bases - matched bases = 5 - 3 = 2 mismatched bases
+```
+
+These two mismatches correspond to position 51, found through the mismatch
+list, and position 53, inferred because the reference did not appear in the
+rare-base match list. Thus, both rules contribute to the same final
+match/mismatch totals while avoiding updates to long posting lists.
 
 For each candidate start, the program accumulates two scores for every active
 reference: the number of aligned bases that match the read and the number that
