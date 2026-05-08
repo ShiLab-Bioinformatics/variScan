@@ -44,19 +44,22 @@ the references.
 
 For example, consider a toy 5-bp read used only to illustrate the counting
 logic. Suppose the library contains 1,000 reference sequences and this 5-bp read
-is aligned to positions 50-54 of a reference sequence. At positions 50, 51, and
-54, the query bases are common in the library, so the program follows the
-mismatch rule: it updates only references that do not have the query base. At
+is tested at start position 50, so its five bases are compared with positions
+50-54 in all 1,000 references at the same time. At positions 50, 51, and 54,
+the query bases are common in the library, so the program follows the mismatch
+rule: it updates only the references that do not have the query base. At
 positions 52 and 53, the query bases are rare, so the program follows the match
-rule: it updates only references that do have the query base.
+rule: it updates only the references that do have the query base.
 
-For one reference sequence, assume the following outcome. At the three
-mismatch-rule positions, the reference mismatches the read at position 51 only.
-The program therefore stores one explicit mismatch for that reference, and the
-other two mismatch-rule positions are counted as implicit matches. At the two
-match-rule positions, assume the reference appears in the match list at
+The batched update produces separate counters for every reference. To see how
+one counter is interpreted, consider reference 137. At the three mismatch-rule
+positions, suppose reference 137 mismatches the read at position 51 only. The
+program therefore stores one explicit mismatch for reference 137, and the other
+two mismatch-rule positions are counted as implicit matches. At the two
+match-rule positions, suppose reference 137 appears in the match list at
 position 52 but not at position 53. The program therefore stores one explicit
-match from the match-rule positions. The total matched count is:
+match from the match-rule positions. The total matched count for reference 137
+is:
 
 ```text
 explicit matches from match-rule positions
@@ -66,7 +69,7 @@ explicit matches from match-rule positions
 ```
 
 The read overlaps five reference bases in this example, so the total mismatch
-count is:
+count for reference 137 is:
 
 ```text
 aligned bases - matched bases = 5 - 3 = 2 mismatched bases
