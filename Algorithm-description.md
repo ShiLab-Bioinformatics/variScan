@@ -37,8 +37,9 @@ algorithm looks up the corresponding reference position and updates match or
 mismatch counts for many references at once. If a queried base is common at
 that position, the matching list may contain most of the library, so it is
 cheaper to update only the shorter mismatch list and treat all other references
-as implicit matches. If the queried base is rare, the program updates the
-shorter match list directly. This adaptive choice matters because most
+as implicit matches. If the queried base is rare, the program uses the shorter
+match list to update the matched-base counts for the corresponding references.
+This adaptive choice matters because most
 positions are conserved, while a small number of variant positions distinguish
 the references.
 
@@ -47,9 +48,12 @@ logic. Suppose the library contains 1,000 reference sequences and this 5-bp read
 is tested at start position 50, so its five bases are compared with positions
 50-54 in all 1,000 references at the same time. At positions 50, 51, and 54,
 the query bases are common in the library, so the program follows the mismatch
-rule: it updates only the references that do not have the query base. At
+rule: it updates the mismatched-base counts for references that do not have the
+query base, while the remaining references receive implicit matched bases. At
 positions 52 and 53, the query bases are rare, so the program follows the match
-rule: it updates only the references that do have the query base.
+rule: it updates the matched-base counts for references that do have the query
+base, while references absent from that match list are treated as mismatches
+when the final count is calculated.
 
 The batched update produces separate counters for every reference. To see how
 one counter is interpreted, consider reference 137. At the three mismatch-rule
