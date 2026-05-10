@@ -57,6 +57,8 @@ rule: it updates the matched-base counts for references that do have the query
 base, while references absent from that match list are treated as mismatches
 when the final count is calculated.
 
+![TEST SVG](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJyZWQiIC8+PC9zdmc+)
+
 ```text
 index data at position 50:
   'matched' => 50 => 'A' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (around 1000 items)
