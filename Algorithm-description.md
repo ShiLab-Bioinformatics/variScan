@@ -64,7 +64,19 @@ program therefore stores one explicit mismatch for reference 137, and the other
 two mismatch-rule positions are counted as implicit matches. At the two
 match-rule positions, suppose reference 137 appears in the match list at
 position 52 but not at position 53. The program therefore stores one explicit
-match from the match-rule positions. The total matched count for reference 137
+match from the match-rule positions. 
+
+```text
+numbers of matched and mismatched bases
+  seq 001: 2 matched out of 2, 0 mismatched out of 3
+  seq 002: 1 matched out of 2, 0 mismatched out of 3
+  ...
+  seq 137: 1 matched out of 2, 1 mismatched out of 3
+  ...
+()
+```
+
+The total matched count for reference 137
 is:
 
 ```text
