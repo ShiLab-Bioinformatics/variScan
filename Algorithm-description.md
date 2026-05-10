@@ -71,7 +71,9 @@ index data at position 50:
 ```
 The above index means that, at the 50-th base location, most of the 1000 reference sequences have 'A' (hence `matched` `A` has nearly 1000 items). They do not have `T`, `G` and `C` at this location (hence `mismatched` `T`, `G` and `C` have nearly 1000 items). But very few of the 1000 reference sequences have `T`, `G` and `C` at the 50-th base (hence `matched` `T`, `G` and `C` have very few items), and they do not have `A` there (hence `mismatched` `A` has very few items).
 
-This index structure enables counting matched/mismatched bases to all the reference sequences at once at each read base location. At the 1st base in the read (the 50-th in reference sequences), the `matched` `A` list is much longer than the `mismatched` `A` list. Hence the algorithm count this read base on the `mismatched` mode, and add mismatched counts to the `mismatched` `A` items: `seq 101`, `seq 302`, ... 
+This index structure enables counting matched/mismatched bases to all the reference sequences at once at each read base location. At the 1st base in the read (the 50-th in reference sequences), the `matched` `A` list is much longer than the `mismatched` `A` list. Hence the algorithm count this read base on the `mismatched` mode, and add mismatched counts to the very few `mismatched` `A` items: `seq 101`, `seq 302`, ... 
+
+At the 3rd base in the read (the 52nd base in the reference sequences), most reference sequences have no `A`, hence `matched` `A` list is much shorter than the `mismahced` `A` list. Thus this base is counted on the `matched` mode, and matched count is added for every items in `matched` `A`. 
 
 ```text
 numbers of matched and mismatched bases of this 5bp read:
