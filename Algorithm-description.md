@@ -57,20 +57,19 @@ rule: it updates the matched-base counts for references that do have the query
 base, while references absent from that match list are treated as mismatches
 when the final count is calculated.
 
-![TEST SVG](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJyZWQiIC8+PC9zdmc+)
-
 ```text
 index data at position 50:
-  'matched' => 50 => 'A' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (around 1000 items)
+  'matched' => 50 => 'A' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (nearly 1000 items)
   'matched' => 50 => 'T' => ['seq 101', 'seq 302', ... ]   (very few items)
   'matched' => 50 => 'G' => ['seq 221', 'seq 252', ... ]   (very few items)
   'matched' => 50 => 'C' => ['seq 231', 'seq 288', ... ]   (very few items)
 
   'mismatched' => 50 => 'A' => ['seq 101', 'seq 302', ... ]   (very few items)
-  'mismatched' => 50 => 'T' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (around 1000 items)
-  'mismatched' => 50 => 'G' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (around 1000 items)
-  'mismatched' => 50 => 'C' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (around 1000 items)
+  'mismatched' => 50 => 'T' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (nearly 1000 items)
+  'mismatched' => 50 => 'G' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (nearly 1000 items)
+  'mismatched' => 50 => 'C' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (nearly 1000 items)
 ```
+The above index means that, at the 50-th base location, most of the 1000 reference sequences have 'A' (hence `matched` `A` has nearly 1000 items). They do not have `T`, `G` and `C` at this location (hence `mismatched` `T`, `G` and `C` have nearly 1000 items). But very few of the 1000 reference sequences have `T`, `G` and `C` at the 50-th base (hence `matched` `T`, `G` and `C` have very few items), and they do not have 'A' there (hence `mismatched` `A` has very few items).
 
 The batched update produces separate counters for every reference. To see how
 one counter is interpreted, consider reference 137. At the three mismatch-rule
