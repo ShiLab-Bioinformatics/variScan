@@ -28,7 +28,7 @@ the index stores two posting lists: references that match the base at that
 position, and references that mismatch it. Conceptually, the structure is:
 
 ```text
-[match or mismatch] -> [base] -> [reference position] -> [reference IDs]
+[match or mismatch] -> [reference position] -> [base] -> [reference IDs]
 ```
 
 ## Calculation of Match/Mismatch Counts against All Reference Sequences Simutaniously
@@ -45,7 +45,7 @@ This adaptive choice matters because most
 positions are conserved, while a small number of variant positions distinguish
 the references.
 
-For example, consider a toy 5-bp read used only to illustrate the counting
+For example, consider a toy 5-bp read (`AAAAA`) used only to illustrate the counting
 logic. Suppose the library contains 1,000 reference sequences and this 5-bp read
 is tested at start position 50, so its five bases are compared with positions
 50-54 in all 1,000 references at the same time. At positions 50, 51, and 54,
@@ -57,6 +57,19 @@ rule: it updates the matched-base counts for references that do have the query
 base, while references absent from that match list are treated as mismatches
 when the final count is calculated.
 
+```text
+index data at position 50:
+  'matched' => 50 => 'A' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (around 1000 items)
+  'matched' => 50 => 'T' => ['seq 101', 'seq 302', ... ]   (very few items)
+  'matched' => 50 => 'G' => ['seq 221', 'seq 252', ... ]   (very few items)
+  'matched' => 50 => 'C' => ['seq 231', 'seq 288', ... ]   (very few items)
+
+  'mismatched' => 50 => 'A' => ['seq 101', 'seq 302', ... ]   (very few items)
+  'mismatched' => 50 => 'T' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (around 1000 items)
+  'mismatched' => 50 => 'G' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (around 1000 items)
+  'mismatched' => 50 => 'C' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (around 1000 items)
+```
+
 The batched update produces separate counters for every reference. To see how
 one counter is interpreted, consider reference 137. At the three mismatch-rule
 positions, suppose reference 137 mismatches the read at position 51 only. The
@@ -67,13 +80,17 @@ position 52 but not at position 53. The program therefore stores one explicit
 match from the match-rule positions. 
 
 ```text
-numbers of matched and mismatched bases
+using index at position 50 for mapping the top 5-bp read
+
+```
+
+```text
+numbers of matched and mismatched bases of this 5bp read:
   seq 001: 2 matched out of 2, 0 mismatched out of 3
   seq 002: 1 matched out of 2, 0 mismatched out of 3
   ...
   seq 137: 1 matched out of 2, 1 mismatched out of 3
   ...
-()
 ```
 
 The total matched count for reference 137
