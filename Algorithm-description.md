@@ -1,178 +1,291 @@
 # Positional Index Alignment Algorithm
 
-This program aligns short read sequences against a library of thousands of
-closely related reference sequences, such as mutated variants of the same
-amplicon, barcode, or genomic locus. It does not perform full dynamic
-programming alignment with insertions and deletions. Instead, it finds the best
-ungapped placement of each read on each reference. For every reference
-sequence, the best mapping location is defined as the placement with the
-highest number of matched bases. At that location, the program reports the
-start position, number of matched bases, and number of mismatches. This model
-is well suited to libraries where variants differ mostly by substitutions.
+This program aligns short reads against a library of thousands of closely
+related reference sequences, such as mutated variants of the same amplicon,
+barcode, or genomic locus.
 
-## Data Structure
-The key observation is that the reference sequences are highly similar and
-mostly the same length. A naive implementation would compare every read against
+The algorithm does not perform full dynamic programming alignment and does not
+model insertions or deletions. Instead, it searches for the best ungapped
+placement of each read on each reference. For every reference sequence, the
+best placement is the start position with the highest number of matching bases.
+At that placement, the program reports:
+
+- the start position,
+- the number of matched bases, and
+- the number of mismatched bases.
+
+Ties in matched-base count are resolved by choosing the placement with fewer
+mismatches. This alignment model is especially suitable for reference libraries
+where sequences are similar in length and differ mainly by substitutions.
+
+## Core Idea
+
+The key observation is that the reference sequences are highly similar and are
+usually the same length. A naive implementation would compare every read with
 every reference at every possible start position. For `R` references, read
-length `L`, and `S` candidate starts, that costs roughly `R * L * S` base
-comparisons per read. With thousands of near-identical references, much of that
-work is redundant. The algorithm therefore changes the unit of work: instead of
-asking
-"how well does this read match reference 1, then reference 2, then reference
-3?", it asks "which references have the expected base at this aligned
-position?" This allows one lookup to update the score of many references.
+length `L`, and `S` candidate starts, this requires roughly:
 
-To make this possible, the program builds a positional inverted index over the
-equal-length references. For each reference position and each base `A/C/G/T`,
-the index stores two posting lists: references that match the base at that
-position, and references that mismatch it. Conceptually, the structure is:
+```text
+R * L * S
+```
+
+base comparisons per read. With thousands of near-identical references, much of
+this work is redundant because the same conserved bases are checked repeatedly.
+
+This algorithm changes the unit of work. Instead of asking:
+
+```text
+How well does this read match reference 1?
+How well does this read match reference 2?
+How well does this read match reference 3?
+...
+```
+
+it asks:
+
+```text
+At this aligned position, which references contain the query base?
+```
+
+One lookup can therefore update the score of many references at once.
+
+## Positional Inverted Index
+
+To support this batched scoring, the program builds a positional inverted index
+over the equal-length reference sequences. For each reference position and each
+base `A/C/G/T`, the index stores two posting lists:
+
+- references that match that base at the position, and
+- references that mismatch that base at the position.
+
+Conceptually, the index has the following structure:
 
 ```text
 [match or mismatch] -> [reference position] -> [base] -> [reference IDs]
 ```
 
-## Calculation of Match/Mismatch Counts against All Reference Sequences Simutaniously
-During alignment, a read is placed at a candidate offset. Only the overlapping
-part of the read and reference is evaluated, which also allows partial
-overlaps near the ends of the reference. For each overlapping query base, the
-algorithm looks up the corresponding reference position and updates match or
-mismatch counts for many references at once. If a queried base is common at
-that position, the matching list may contain most of the library, so it is
-cheaper to update only the shorter mismatch list and treat all other references
-as implicit matches. If the queried base is rare, the program uses the shorter
-match list to update the matched-base counts for the corresponding references.
-This adaptive choice matters because most
-positions are conserved, while a small number of variant positions distinguish
-the references.
-
-For example, consider a toy 5-bp read (`AAAAA`) used only to illustrate the counting
-logic. Suppose the library contains 1,000 reference sequences and this 5-bp read
-is tested at start position 50, so its five bases are compared with positions
-50-54 in all 1,000 references at the same time. At positions 50, 51, and 54,
-the query bases are common in the library, so the program follows the mismatch
-rule: it updates the mismatched-base counts for references that do not have the
-query base, while the remaining references receive implicit matched bases. At
-positions 52 and 53, the query bases are rare, so the program follows the match
-rule: it updates the matched-base counts for references that do have the query
-base, while references absent from that match list are treated as mismatches
-when the final count is calculated.
-
-Here I give an example for index data at `position 50` of all reference sequences:
-```text
-  'matched' => 'A' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (nearly 1000 items)
-  'matched' => 'T' => ['seq 101', 'seq 302', ... ]   (very few items)
-  'matched' => 'G' => ['seq 221', 'seq 252', ... ]   (very few items)
-  'matched' => 'C' => ['seq 231', 'seq 288', ... ]   (very few items)
-
-  'mismatched' => 'A' => ['seq 101', 'seq 221', 'seq 231', ... ]   (very few items)
-  'mismatched' => 'T' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (nearly 1000 items)
-  'mismatched' => 'G' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (nearly 1000 items)
-  'mismatched' => 'C' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (nearly 1000 items)
-```
-The above index means that, at the 50-th base location, most of the 1000 reference sequences have 'A' (hence `matched` `A` has nearly 1000 items). They do not have `T`, `G` and `C` at this location (hence `mismatched` `T`, `G` and `C` have nearly 1000 items). But very few of the 1000 reference sequences have `T`, `G` and `C` at the 50-th base (hence `matched` `T`, `G` and `C` have very few items), and they do not have `A` there (hence `mismatched` `A` has very few items).
-
-This index structure enables counting matched/mismatched bases to all the reference sequences at once at each read base location. At the 1st base in the read (the 50-th in reference sequences), the `matched` `A` list is much longer than the `mismatched` `A` list. Hence the algorithm counts this read base on the `mismatched` mode, and adds mismatched counts for the very few `mismatched` `A` items: `seq 101`, `seq 302`, ... 
-
-Here I give an example for index data at `position 52` of all reference sequences:
-```text
-  'matched' => 'A' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (very few items)
-  'matched' => 'T' => ['seq 101', 'seq 302', ... ]   (very few items)
-  'matched' => 'G' => ['seq 221', 'seq 252', ... ]   (very few items)
-  'matched' => 'C' => ['seq 231', 'seq 288', ... ]   (nearly 1000 items)
-
-  'mismatched' => 'A' => ['seq 101', 'seq 221', 'seq 231', ... ]   (nearly 1000 items)
-  'mismatched' => 'T' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (nearly 1000 items)
-  'mismatched' => 'G' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (nearly 1000 items)
-  'mismatched' => 'C' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (very few items)
-```
-The above index means that, at the 50-th base location, most of the 1000 reference sequences have 'A' (hence `matched` `A` has nearly 1000 items). They do not have `T`, `G` and `C` at this location (hence `mismatched` `T`, `G` and `C` have nearly 1000 items). But very few of the 1000 reference sequences have `T`, `G` and `C` at the 50-th base (hence `matched` `T`, `G` and `C` have very few items), and they do not have `A` there (hence `mismatched` `A` has very few items).
-
-At the 3rd base in the read (the 52nd base in the reference sequences), most reference sequences have no `A`, hence `matched` `A` list is much shorter than the `mismahced` `A` list. Thus this read base is counted on the `matched` mode, and matched count is added for every items in `matched` `A`. 
+For example, suppose that at reference position 50 most reference sequences
+contain `A`, while only a small number contain `T`, `G`, or `C`. The index for
+that position would look conceptually like this:
 
 ```text
-numbers of matched and mismatched bases of this 5bp read:
-  seq 001: 2 matched out of 2, 0 mismatched out of 3
-  seq 002: 1 matched out of 2, 0 mismatched out of 3
-  ...
-  seq 137: 1 matched out of 2, 1 mismatched out of 3
-  ...
+'matched'    => 'A' => ['seq 001', 'seq 002', ..., 'seq 137', ...]   (nearly 1000 items)
+'matched'    => 'T' => ['seq 101', 'seq 302', ...]                   (very few items)
+'matched'    => 'G' => ['seq 221', 'seq 252', ...]                   (very few items)
+'matched'    => 'C' => ['seq 231', 'seq 288', ...]                   (very few items)
+
+'mismatched' => 'A' => ['seq 101', 'seq 221', 'seq 231', ...]         (very few items)
+'mismatched' => 'T' => ['seq 001', 'seq 002', ..., 'seq 137', ...]   (nearly 1000 items)
+'mismatched' => 'G' => ['seq 001', 'seq 002', ..., 'seq 137', ...]   (nearly 1000 items)
+'mismatched' => 'C' => ['seq 001', 'seq 002', ..., 'seq 137', ...]   (nearly 1000 items)
 ```
 
-The total matched count for reference 137 is:
+The `matched A` list is long because most references have `A` at this position.
+The `mismatched A` list is short because only the references with another base
+at this position fail to match `A`. The reverse is true for rare bases such as
+`T`, `G`, and `C`: their match lists are short, while their mismatch lists are
+long.
+
+This redundancy is the source of the speed-up. When one posting list is long,
+the complementary list is short, and the algorithm can update only the shorter
+one.
+
+## Simultaneous Match and Mismatch Counting
+
+During alignment, a read is placed at a candidate start position. Only the
+overlapping part of the read and reference is evaluated, so partial overlaps
+near reference ends are also supported.
+
+For each overlapping query base, the program looks up the corresponding
+reference position in the index. It then chooses the shorter of two equivalent
+ways to score the base:
+
+- **Mismatch mode:** If the query base is common at this position, the match
+  list is long and the mismatch list is short. The program updates only the
+  references in the mismatch list. All other references are treated as implicit
+  matches.
+- **Match mode:** If the query base is rare at this position, the match list is
+  short and the mismatch list is long. The program updates only the references
+  in the match list. All other references are treated as implicit mismatches
+  when the final score is calculated.
+
+This adaptive choice is important because most positions are conserved, while a
+small number of variant positions distinguish the references.
+
+## Counting Example
+
+Consider a toy 5-bp read:
 
 ```text
-explicit matches from match-rule positions
-+ implicit matches from mismatch-rule positions
+AAAAA
+```
+
+Suppose the library contains 1,000 reference sequences and this read is tested
+at start position 50. The five query bases are therefore compared with reference
+positions 50 to 54 across all 1,000 references at the same time.
+
+Assume the query base `A` is common at positions 50, 51, and 54. For those
+positions, the program uses mismatch mode: it records only the few references
+that do not have `A`, and it treats all other references as implicit matches.
+
+Now assume the query base `A` is rare at positions 52 and 53. For those
+positions, the program uses match mode: it records only the few references that
+do have `A`, and it treats all other references as implicit mismatches.
+
+### Common Query Base
+
+At position 50, most references have `A`. Therefore, for the first base of the
+read, the `matched A` list is much longer than the `mismatched A` list:
+
+```text
+'matched'    => 'A' => ['seq 001', 'seq 002', ..., 'seq 137', ...]   (nearly 1000 items)
+'mismatched' => 'A' => ['seq 101', 'seq 221', 'seq 231', ...]         (very few items)
+```
+
+The algorithm uses mismatch mode and updates only the few references in
+`mismatched A`. Every reference absent from that short list receives an implicit
+match for this read base.
+
+### Rare Query Base
+
+At position 52, suppose most references have `C`, while only a few references
+have `A`. The relevant index entries are therefore:
+
+```text
+'matched'    => 'A' => ['seq 001', 'seq 002', ..., 'seq 137', ...]   (very few items)
+'matched'    => 'C' => ['seq 231', 'seq 288', ...]                   (nearly 1000 items)
+
+'mismatched' => 'A' => ['seq 101', 'seq 221', 'seq 231', ...]         (nearly 1000 items)
+'mismatched' => 'C' => ['seq 001', 'seq 002', ..., 'seq 137', ...]   (very few items)
+```
+
+For the third base of the read, the query base is still `A`, but `A` is rare at
+this reference position. The `matched A` list is therefore much shorter than the
+`mismatched A` list. The algorithm uses match mode and updates only the
+references in `matched A`. References absent from this short list are counted as
+mismatches for this position when the final total is computed.
+
+### Combining Explicit and Implicit Counts
+
+In this example, three read positions were scored in mismatch mode and two read
+positions were scored in match mode. The program combines explicit and implicit
+counts to obtain the final score for each reference.
+
+For example, suppose `seq 137` has:
+
+```text
+1 explicit match from the two match-mode positions
+1 explicit mismatch from the three mismatch-mode positions
+```
+
+The total matched-base count for `seq 137` is:
+
+```text
+explicit matches from match-mode positions
++ implicit matches from mismatch-mode positions
 = 1 + (3 - 1)
 = 3 matched bases
 ```
 
-The read overlaps five reference bases in this example, so the total mismatch
-count for reference 137 is:
+Because the read overlaps five reference bases, the mismatch count is:
 
 ```text
-aligned bases - matched bases = 5 - 3 = 2 mismatched bases
+aligned bases - matched bases
+= 5 - 3
+= 2 mismatched bases
 ```
 
-These two mismatches correspond to position 51, found through the mismatch
-list, and position 53, inferred because the reference did not appear in the
-rare-base match list. Thus, both rules contribute to the same final
-match/mismatch totals while avoiding updates to long posting lists.
+The two mismatches can come from both scoring modes:
 
-For each candidate start, the program accumulates two scores for every active
-reference: the number of aligned bases that match the read and the number that
-mismatch it. After all useful bases for that start have been considered, the
-program compares the candidate score with the current best score for that same
-reference. If the candidate has more matched bases, it becomes the new best
-mapping location for that reference. If the matched-base count is tied, the
-program uses the smaller mismatch count as the tie-breaker. In this way, each
-reference sequence retains its own best start position, matched-base count, and
-mismatched-base count for the read.
+- one mismatch may be recorded explicitly through a mismatch list, and
+- another may be inferred because the reference was absent from a rare-base
+  match list.
 
-# Early Drop-out of Impossible Best Alignements
-The second efficiency feature is the early drop-out rule. Before scanning all
-candidate offsets in detail, the program performs a pilot pass against the
-first reference sequence and chooses its best read start. Because the library
-contains very similar sequences, a good start for the first sequence is usually
-informative for the rest of the library. The program then scores all indexed
-references at that start to obtain a per-reference lower bound: each reference
-already has a score that any later candidate start must improve upon to matter.
-At later starts, each reference is kept alive only while it can still beat that
-bound. After each processed base, the program computes an optimistic upper
-bound:
+Both modes therefore contribute to the same final match and mismatch totals,
+while avoiding updates to long posting lists.
+
+## Choosing the Best Start for Each Reference
+
+For each candidate start, the program accumulates a score for every active
+reference. After all useful bases for that start have been processed, the score
+is compared with the current best score for the same reference.
+
+A candidate start becomes the new best placement for a reference if:
+
+- it has more matched bases than the current best placement, or
+- it has the same number of matched bases but fewer mismatched bases.
+
+In this way, every reference sequence keeps its own best start position,
+matched-base count, and mismatched-base count for the read.
+
+## Early Drop-Out of Impossible Alignments
+
+The second major efficiency feature is the early drop-out rule.
+
+Before scoring all candidate starts in detail, the program performs a pilot pass
+against the first reference sequence and finds its best read start. Because the
+reference library contains highly similar sequences, a good start for the first
+reference is usually informative for the rest of the library.
+
+The program then scores all indexed references at that pilot start. This gives
+each reference an initial lower bound: any later candidate start must improve on
+this score to become relevant.
+
+For later candidate starts, each reference is kept active only while it can
+still beat its current bound. After each processed base, the program computes an
+optimistic upper bound:
 
 ```text
 matches already accumulated + remaining unprocessed bases
 ```
 
-This is optimistic because it assumes every remaining base will match. If this
-upper bound is less than the reference's pilot score, no possible outcome for
-the current start can improve that reference's best result. The reference is
-marked as stopped for the current start. Once all valid references have stopped,
-the candidate start is abandoned immediately. Starts whose overlap length is
-already too short to beat the pilot-derived bound are skipped entirely. This
-rule is safe because it only drops candidates that cannot mathematically catch
-up, even under the most favorable remaining sequence.
+This bound is optimistic because it assumes that every remaining base will
+match. If the upper bound is lower than the reference's current best matched
+count, then the current start cannot improve that reference's best result. That
+reference is marked as stopped for the current start.
 
-References with shorter-than-maximum length are handled separately by direct
-scanning, because they cannot share the same fixed-position index as the main
-equal-length group. For these sequences, the program tries each possible
-ungapped start, counts matches and mismatches directly, and keeps the location
-with the highest matched-base count. Even in this direct-scanning path, the
-comparison exits early once the mismatch count proves that the current
-placement cannot exceed the best match count already seen.
+Once all valid references have stopped, the candidate start is abandoned
+immediately. Candidate starts whose overlap length is already too short to beat
+the current bound are skipped entirely.
 
-The program is also parallelized across reads with worker goroutines. The index
-is built once, shared read-only by all workers, and each read is aligned
-independently. This works well because reads do not depend on one another after
-the reference index has been constructed. Results are written in a compact
-binary format using fixed-width integers, reducing output overhead.
+This rule is safe because it discards only candidates that cannot
+mathematically catch up, even under the most favorable possible remaining
+sequence.
 
-Overall, the algorithm is fast because it exploits the structure of the
-problem: references are numerous, similar, and positionally comparable. The
-inverted index replaces repeated per-reference base comparisons with batched
-posting-list updates, while the early drop-out rule prevents hopeless
-reference/start combinations from being scored to completion. The result is an
-alignment strategy that is especially efficient for dense panels of related
-reference sequences, where conventional all-against-all scanning would spend
-most of its time rediscovering the same conserved bases.
+## Shorter Reference Sequences
+
+References shorter than the main equal-length group are handled separately by
+direct scanning, because they cannot share the same fixed-position index.
+
+For these shorter references, the program tries each possible ungapped start,
+counts matches and mismatches directly, and keeps the placement with the
+highest matched-base count. The same tie-breaker is used: if two placements have
+the same number of matches, the placement with fewer mismatches is preferred.
+
+Even in this direct-scanning path, the comparison exits early when the current
+placement can no longer exceed the best score already found.
+
+## Parallel Execution and Output
+
+The program is parallelized across reads using worker goroutines. The reference
+index is built once, shared read-only by all workers, and then reused for
+independent read alignments. This is effective because reads do not depend on
+one another after the reference index has been constructed.
+
+Results are written in a compact binary format using fixed-width integers,
+which reduces output overhead.
+
+## Summary
+
+The algorithm is fast because it exploits the structure of the problem:
+reference sequences are numerous, similar, and positionally comparable.
+
+The positional inverted index replaces repeated per-reference base comparisons
+with batched posting-list updates. The adaptive match/mismatch scoring rule
+avoids updating long posting lists. The early drop-out rule prevents impossible
+reference/start combinations from being scored to completion.
+
+Together, these features produce an alignment strategy that is especially
+efficient for dense panels of related reference sequences, where conventional
+all-against-all scanning would spend most of its time rediscovering the same
+conserved bases.
