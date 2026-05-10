@@ -58,13 +58,13 @@ base, while references absent from that match list are treated as mismatches
 when the final count is calculated.
 
 ```text
-index data at position 50:
+index data at position 50 of all reference sequences:
   'matched' => 50 => 'A' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (nearly 1000 items)
   'matched' => 50 => 'T' => ['seq 101', 'seq 302', ... ]   (very few items)
   'matched' => 50 => 'G' => ['seq 221', 'seq 252', ... ]   (very few items)
   'matched' => 50 => 'C' => ['seq 231', 'seq 288', ... ]   (very few items)
 
-  'mismatched' => 50 => 'A' => ['seq 101', 'seq 302', ... ]   (very few items)
+  'mismatched' => 50 => 'A' => ['seq 101', 'seq 221', 'seq 231', ... ]   (very few items)
   'mismatched' => 50 => 'T' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (nearly 1000 items)
   'mismatched' => 50 => 'G' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (nearly 1000 items)
   'mismatched' => 50 => 'C' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (nearly 1000 items)
@@ -84,8 +84,7 @@ numbers of matched and mismatched bases of this 5bp read:
   ...
 ```
 
-The total matched count for reference 137
-is:
+The total matched count for reference 137 is:
 
 ```text
 explicit matches from match-rule positions
