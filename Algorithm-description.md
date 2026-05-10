@@ -73,6 +73,20 @@ The above index means that, at the 50-th base location, most of the 1000 referen
 
 This index structure enables counting matched/mismatched bases to all the reference sequences at once at each read base location. At the 1st base in the read (the 50-th in reference sequences), the `matched` `A` list is much longer than the `mismatched` `A` list. Hence the algorithm counts this read base on the `mismatched` mode, and adds mismatched counts for the very few `mismatched` `A` items: `seq 101`, `seq 302`, ... 
 
+Here I give an example for index data at `position 52` of all reference sequences:
+```text
+  'matched' => 'A' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (very few items)
+  'matched' => 'T' => ['seq 101', 'seq 302', ... ]   (very few items)
+  'matched' => 'G' => ['seq 221', 'seq 252', ... ]   (very few items)
+  'matched' => 'C' => ['seq 231', 'seq 288', ... ]   (nearly 1000 items)
+
+  'mismatched' => 'A' => ['seq 101', 'seq 221', 'seq 231', ... ]   (nearly 1000 items)
+  'mismatched' => 'T' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (nearly 1000 items)
+  'mismatched' => 'G' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (nearly 1000 items)
+  'mismatched' => 'C' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (very few items)
+```
+The above index means that, at the 50-th base location, most of the 1000 reference sequences have 'A' (hence `matched` `A` has nearly 1000 items). They do not have `T`, `G` and `C` at this location (hence `mismatched` `T`, `G` and `C` have nearly 1000 items). But very few of the 1000 reference sequences have `T`, `G` and `C` at the 50-th base (hence `matched` `T`, `G` and `C` have very few items), and they do not have `A` there (hence `mismatched` `A` has very few items).
+
 At the 3rd base in the read (the 52nd base in the reference sequences), most reference sequences have no `A`, hence `matched` `A` list is much shorter than the `mismahced` `A` list. Thus this read base is counted on the `matched` mode, and matched count is added for every items in `matched` `A`. 
 
 ```text
