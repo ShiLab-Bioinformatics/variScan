@@ -10,6 +10,7 @@ highest number of matched bases. At that location, the program reports the
 start position, number of matched bases, and number of mismatches. This model
 is well suited to libraries where variants differ mostly by substitutions.
 
+## Data Structure
 The key observation is that the reference sequences are highly similar and
 mostly the same length. A naive implementation would compare every read against
 every reference at every possible start position. For `R` references, read
@@ -30,6 +31,7 @@ position, and references that mismatch it. Conceptually, the structure is:
 [match or mismatch] -> [base] -> [reference position] -> [reference IDs]
 ```
 
+## Calculation of Match/Mismatch Counts against All Reference Sequences Simutaniously
 During alignment, a read is placed at a candidate offset. Only the overlapping
 part of the read and reference is evaluated, which also allows partial
 overlaps near the ends of the reference. For each overlapping query base, the
@@ -94,6 +96,7 @@ program uses the smaller mismatch count as the tie-breaker. In this way, each
 reference sequence retains its own best start position, matched-base count, and
 mismatched-base count for the read.
 
+# Early Drop-out of Impossible Best Alignements
 The second efficiency feature is the early drop-out rule. Before scanning all
 candidate offsets in detail, the program performs a pilot pass against the
 first reference sequence and chooses its best read start. Because the library
