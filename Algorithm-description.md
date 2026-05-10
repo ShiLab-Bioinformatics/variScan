@@ -69,21 +69,9 @@ index data at position 50:
   'mismatched' => 50 => 'G' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (nearly 1000 items)
   'mismatched' => 50 => 'C' => ['seq 001', 'seq 002', ..., 'seq 137', ... ]   (nearly 1000 items)
 ```
-The above index means that, at the 50-th base location, most of the 1000 reference sequences have 'A' (hence `matched` `A` has nearly 1000 items). They do not have `T`, `G` and `C` at this location (hence `mismatched` `T`, `G` and `C` have nearly 1000 items). But very few of the 1000 reference sequences have `T`, `G` and `C` at the 50-th base (hence `matched` `T`, `G` and `C` have very few items), and they do not have 'A' there (hence `mismatched` `A` has very few items).
+The above index means that, at the 50-th base location, most of the 1000 reference sequences have 'A' (hence `matched` `A` has nearly 1000 items). They do not have `T`, `G` and `C` at this location (hence `mismatched` `T`, `G` and `C` have nearly 1000 items). But very few of the 1000 reference sequences have `T`, `G` and `C` at the 50-th base (hence `matched` `T`, `G` and `C` have very few items), and they do not have `A` there (hence `mismatched` `A` has very few items).
 
-The batched update produces separate counters for every reference. To see how
-one counter is interpreted, consider reference 137. At the three mismatch-rule
-positions, suppose reference 137 mismatches the read at position 51 only. The
-program therefore stores one explicit mismatch for reference 137, and the other
-two mismatch-rule positions are counted as implicit matches. At the two
-match-rule positions, suppose reference 137 appears in the match list at
-position 52 but not at position 53. The program therefore stores one explicit
-match from the match-rule positions. 
-
-```text
-using index at position 50 for mapping the top 5-bp read
-
-```
+This index structure enables counting matched/mismatched bases to all the reference sequences at once at each read base location. At the 1st base in the read (the 50-th in reference sequences), the `matched` `A` list is much longer than the `mismatched` `A` list. Hence the algorithm count this read base on the `mismatched` mode, and add mismatched counts to the `mismatched` `A` items: `seq 101`, `seq 302`, ... 
 
 ```text
 numbers of matched and mismatched bases of this 5bp read:
