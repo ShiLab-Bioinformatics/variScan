@@ -178,6 +178,16 @@ For example, suppose `seq 137` has:
 1 explicit mismatch from the three mismatch-mode positions
 ```
 
+These explicit counts also determine the implicit counts:
+
+```text
+match-mode positions:
+  2 total positions - 1 explicit match = 1 implicit mismatch
+
+mismatch-mode positions:
+  3 total positions - 1 explicit mismatch = 2 implicit matches
+```
+
 The total matched-base count for `seq 137` is:
 
 ```text
