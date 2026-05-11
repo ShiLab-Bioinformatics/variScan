@@ -166,7 +166,7 @@ mismatches for this position when the final total is computed.
 
 ### Combining Explicit and Implicit Counts
 
-The program combines explicit and implicit counts to obtain the final matched/mismatched counts of this read to each reference sequences at that candidate start. As described above,
+The program combines explicit and implicit counts to obtain the final matched/mismatched counts of this read to each reference sequences at that candidate start. As described above, when this 5-bp read is aligned to the 50th to 54th bases in all reference sequences,
 
 ```text
 2 in the 5 read bases were compared with the reference sequences on the match mode.
