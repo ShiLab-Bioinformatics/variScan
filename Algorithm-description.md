@@ -68,15 +68,15 @@ contain `A`, while only a small number contain `T`, `G`, or `C`. The index for
 that position would look conceptually like this:
 
 ```text
-'matched'    => 'A' => ['seq 001', 'seq 002', ..., 'seq 137', ...]   (nearly 1000 items)
+'matched'    => 'A' => ['seq 001', 'seq 002', ...]   (nearly 1000 items)
 'matched'    => 'T' => ['seq 101', 'seq 302', ...]                   (very few items)
 'matched'    => 'G' => ['seq 221', 'seq 252', ...]                   (very few items)
 'matched'    => 'C' => ['seq 231', 'seq 288', ...]                   (very few items)
 
-'mismatched' => 'A' => ['seq 101', 'seq 221', 'seq 231', ...]         (very few items)
-'mismatched' => 'T' => ['seq 001', 'seq 002', ..., 'seq 137', ...]   (nearly 1000 items)
-'mismatched' => 'G' => ['seq 001', 'seq 002', ..., 'seq 137', ...]   (nearly 1000 items)
-'mismatched' => 'C' => ['seq 001', 'seq 002', ..., 'seq 137', ...]   (nearly 1000 items)
+'mismatched' => 'A' => ['seq 101', 'seq 221', 'seq 231', ...]        (very few items)
+'mismatched' => 'T' => ['seq 001', 'seq 002', ...]   (nearly 1000 items)
+'mismatched' => 'G' => ['seq 001', 'seq 002', ...]   (nearly 1000 items)
+'mismatched' => 'C' => ['seq 001', 'seq 002', ...]   (nearly 1000 items)
 ```
 
 The `matched A` list is long because most reference sequences have `A` at this position.
@@ -137,8 +137,8 @@ At position 50, most references have `A`. Therefore, for the first base of the
 read, the `matched A` list is much longer than the `mismatched A` list:
 
 ```text
-'matched'    => 'A' => ['seq 001', 'seq 002', ..., 'seq 137', ...]   (nearly 1000 items)
-'mismatched' => 'A' => ['seq 101', 'seq 221', 'seq 231', ...]         (very few items)
+'matched'    => 'A' => ['seq 001', 'seq 002', ...]      (nearly 1000 items)
+'mismatched' => 'A' => ['seq 101', 'seq 221', ...]      (very few items)
 ```
 
 The algorithm uses mismatch mode and updates only the few references in
@@ -151,11 +151,11 @@ At position 52, suppose most references have `C`, while only a few references
 have `A`. The relevant index entries are therefore:
 
 ```text
-'matched'    => 'A' => ['seq 001', 'seq 002', ..., 'seq 137', ...]   (very few items)
-'matched'    => 'C' => ['seq 231', 'seq 288', ...]                   (nearly 1000 items)
+'matched'    => 'A' => ['seq 137', 'seq 261', ...]      (very few items)
+'matched'    => 'C' => ['seq 001', 'seq 002', ...]      (nearly 1000 items)
 
-'mismatched' => 'A' => ['seq 101', 'seq 221', 'seq 231', ...]         (nearly 1000 items)
-'mismatched' => 'C' => ['seq 001', 'seq 002', ..., 'seq 137', ...]   (very few items)
+'mismatched' => 'A' => ['seq 001', 'seq 002', ...]      (nearly 1000 items)
+'mismatched' => 'C' => ['seq 137', 'seq 285', ...]      (very few items)
 ```
 
 For the third base of the read, the query base is still `A`, but `A` is rare at
@@ -168,13 +168,18 @@ mismatches for this position when the final total is computed.
 
 In this example, three read positions were scored in mismatch mode and two read
 positions were scored in match mode. The program combines explicit and implicit
-counts to obtain the final score for each reference.
+counts to obtain the final score for each reference sequences based on that. As described above,
+
+```text
+2 in the 5 read bases were compared on the match mode.
+3 in the 5 read bases were compared on the mismatch mode.
+```
 
 For example, suppose `seq 137` has:
 
 ```text
-1 explicit match from the two match-mode positions
-1 explicit mismatch from the three mismatch-mode positions
+1 explicit match in the 2 match-mode positions.
+1 explicit mismatch in the 3 mismatch-mode positions.
 ```
 
 These explicit counts also determine the implicit counts:
