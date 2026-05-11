@@ -227,13 +227,11 @@ matched-base count, and mismatched-base count for the read.
 
 ## Shorter Reference Sequences
 
-References shorter than the main equal-length group are handled separately by
-direct scanning, because they cannot share the same fixed-position index.
+Reference sequences shorter than the longest sequence (typically the majority) are processed separately using direct scanning, because they cannot share the same fixed-position index.
 
-For these shorter references, the program tries each possible ungapped start,
-counts matches and mismatches directly, and keeps the placement with the
-highest matched-base count. The same tie-breaker is used: if two placements have
-the same number of matches, the placement with fewer mismatches is preferred.
+For these shorter references, the program evaluates every possible ungapped alignment start position, directly counts matched and mismatched bases, and retains the placement with the highest number of matched bases. The same tie-breaking rule is applied: if two placements have the same number of matched bases, the placement with fewer mismatches is preferred.
+
+Even when the number of shorter reference sequences exceeds the number of longest references, the alignment results remain correct, while the algorithm becomes slower.
 
 ## Parallel Execution and Output
 
