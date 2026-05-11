@@ -233,9 +233,12 @@ For these shorter references, the program evaluates every possible ungapped alig
 
 Even when the number of shorter reference sequences exceeds the number of longest references, the alignment results remain correct, while the algorithm becomes slower.
 
-## Parallel Execution and Output
+## Parallel Execution
 
 The program is parallelized across reads using worker goroutines. The reference
 index is built once, shared read-only by all workers, and then reused for
 independent read alignments. This is effective because reads do not depend on
 one another after the reference index has been constructed.
+
+# Determining Final Alignment Target for Read Pairs
+Each end in the input read pair are aligned to all reference sequences individually using the algorithm described above. Among all reference sequences, the one with the highest total number of matched bases across both ends is selected as the final alignment target of the read pair, provided that at least one end has three or fewer mismatches at its best alignment position. Read pairs with multiple equally optimal reference alignments are classified as unmappable to avoid ambiguity.
