@@ -225,40 +225,6 @@ A candidate start becomes the new best placement for a reference if:
 In this way, every reference sequence keeps its own best start position,
 matched-base count, and mismatched-base count for the read.
 
-## Early Drop-Out of Impossible Alignments
-
-The second major efficiency feature is the early drop-out rule.
-
-Before scoring all candidate starts in detail, the program performs a pilot pass
-against the first reference sequence and finds its best read start. Because the
-reference library contains highly similar sequences, a good start for the first
-reference is usually informative for the rest of the library.
-
-The program then scores all indexed references at that pilot start. This gives
-each reference an initial lower bound: any later candidate start must improve on
-this score to become relevant.
-
-For later candidate starts, each reference is kept active only while it can
-still beat its current bound. After each processed base, the program computes an
-optimistic upper bound:
-
-```text
-matches already accumulated + remaining unprocessed bases
-```
-
-This bound is optimistic because it assumes that every remaining base will
-match. If the upper bound is lower than the reference sequence's current best matched
-count, then the current start cannot improve that reference's best result. That
-reference is marked as excluded for the current candidate start.
-
-Once all valid references have stopped, the candidate start is abandoned
-immediately. Candidate starts whose overlap length is already too short to beat
-the current bound are skipped entirely.
-
-This rule is safe because it discards only candidates that cannot
-mathematically catch up, even under the most favorable possible remaining
-sequence.
-
 ## Shorter Reference Sequences
 
 References shorter than the main equal-length group are handled separately by
@@ -278,21 +244,3 @@ The program is parallelized across reads using worker goroutines. The reference
 index is built once, shared read-only by all workers, and then reused for
 independent read alignments. This is effective because reads do not depend on
 one another after the reference index has been constructed.
-
-Results are written in a compact binary format using fixed-width integers,
-which reduces output overhead.
-
-## Summary
-
-The algorithm is fast because it exploits the structure of the problem:
-reference sequences are numerous, similar, and positionally comparable.
-
-The positional inverted index replaces repeated per-reference base comparisons
-with batched posting-list updates. The adaptive match/mismatch scoring rule
-avoids updating long posting lists. The early drop-out rule prevents impossible
-reference/start combinations from being scored to completion.
-
-Together, these features produce an alignment strategy that is especially
-efficient for dense panels of related reference sequences, where conventional
-all-against-all scanning would spend most of its time rediscovering the same
-conserved bases.
