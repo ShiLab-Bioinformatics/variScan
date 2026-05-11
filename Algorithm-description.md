@@ -141,13 +141,13 @@ read, the `matched A` list is much longer than the `mismatched A` list:
 'mismatched' => 'A' => ['seq 101', 'seq 221', ...]      (very few items)
 ```
 
-The algorithm uses mismatch mode and updates only the few references in
-`mismatched A`. Every reference absent from that short list receives an implicit
+The algorithm uses mismatch mode and updates only the few reference sequences in
+`mismatched A`. Every reference sequence absent from that short list receives an implicit
 match for this read base.
 
 ### Rare Query Base
 
-At position 52, suppose most references have `C`, while only a few references
+At position 52, suppose most reference sequences have `C`, while only a few reference sequences
 have `A`. The relevant index entries are therefore:
 
 ```text
@@ -159,9 +159,9 @@ have `A`. The relevant index entries are therefore:
 ```
 
 For the third base of the read, the query base is still `A`, but `A` is rare at
-this reference position. The `matched A` list is therefore much shorter than the
+this reference sequence position. The `matched A` list is therefore much shorter than the
 `mismatched A` list. The algorithm uses match mode and updates only the
-references in `matched A`. References absent from this short list are counted as
+reference sequences in `matched A`. Reference sequences absent from this short list are counted as
 mismatches for this position when the final total is computed.
 
 ### Combining Explicit and Implicit Counts
