@@ -63,7 +63,7 @@ Conceptually, the index has the following structure:
 [match or mismatch] -> [reference position] -> [base] -> [reference sequence IDs]
 ```
 
-Suppose the library contains 1,000 reference sequences, and suppose that, at reference position 50, most reference sequences
+Suppose the library contains 1,000 reference sequences, and suppose that, at base-position 50, most reference sequences
 contain `A`, while only a small number contain `T`, `G`, or `C`. The index for
 that position would look conceptually like this:
 
