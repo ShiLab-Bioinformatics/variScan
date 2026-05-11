@@ -79,8 +79,8 @@ that position would look conceptually like this:
 'mismatched' => 'C' => ['seq 001', 'seq 002', ..., 'seq 137', ...]   (nearly 1000 items)
 ```
 
-The `matched A` list is long because most references have `A` at this position.
-The `mismatched A` list is short because only the references with another base
+The `matched A` list is long because most reference sequences have `A` at this position.
+The `mismatched A` list is short because only the reference sequences with another base
 at this position fail to match `A`. The reverse is true for rare bases such as
 `T`, `G`, and `C`: their match lists are short, while their mismatch lists are
 long.
@@ -101,15 +101,15 @@ ways to score the base:
 
 - **Mismatch mode:** If the query base is common at this position, the match
   list is long and the mismatch list is short. The program updates only the
-  references in the mismatch list. All other references are treated as implicit
+  references in the mismatch list. All other reference sequences are treated as implicit
   matches.
 - **Match mode:** If the query base is rare at this position, the match list is
-  short and the mismatch list is long. The program updates only the references
-  in the match list. All other references are treated as implicit mismatches
+  short and the mismatch list is long. The program updates only the reference sequences
+  in the match list. All other reference sequences are treated as implicit mismatches
   when the final score is calculated.
 
 This adaptive choice is important because most positions are conserved, while a
-small number of variant positions distinguish the references.
+small number of variant positions distinguish the reference sequences.
 
 ## Counting Example
 
@@ -121,14 +121,14 @@ AAAAA
 
 Suppose the library contains 1,000 reference sequences and this read is tested
 at start position 50. The five query bases are therefore compared with reference
-positions 50 to 54 across all 1,000 references at the same time.
+positions 50 to 54 across all 1,000 reference sequences at the same time.
 
 Assume the query base `A` is common at positions 50, 51, and 54. For those
 positions, the program uses mismatch mode: it records only the few references
-that do not have `A`, and it treats all other references as implicit matches.
+that do not have `A`, and it treats all other reference sequences as implicit matches.
 
 Now assume the query base `A` is rare at positions 52 and 53. For those
-positions, the program uses match mode: it records only the few references that
+positions, the program uses match mode: it records only the few reference sequences that
 do have `A`, and it treats all other references as implicit mismatches.
 
 ### Common Query Base
@@ -187,28 +187,24 @@ mismatch-mode positions:
   3 total positions - 1 explicit mismatch = 2 implicit matches
 ```
 
-The total matched-base count for `seq 137` is:
+The total matched-base count of this read at the 50th base in `seq 137` is:
 
 ```text
 explicit matches from match-mode positions
 + implicit matches from mismatch-mode positions
-= 1 + (3 - 1)
+= 1 + 2
 = 3 matched bases
+
 ```
 
-Because the read overlaps five reference bases, the mismatch count is:
+The total mismatched-base count is:
 
 ```text
-aligned bases - matched bases
-= 5 - 3
+explicit mismatches from match-mode positions
++ implicit mismatches from mismatch-mode positions
+= 1 + 1
 = 2 mismatched bases
 ```
-
-The two mismatches can come from both scoring modes:
-
-- one mismatch may be recorded explicitly through a mismatch list, and
-- another may be inferred because the reference was absent from a rare-base
-  match list.
 
 Both modes therefore contribute to the same final match and mismatch totals,
 while avoiding updates to long posting lists.
