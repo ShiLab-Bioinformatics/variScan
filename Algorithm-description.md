@@ -200,8 +200,8 @@ explicit matches from match-mode positions
 The total mismatched-base count is:
 
 ```text
-explicit mismatches from match-mode positions
-+ implicit mismatches from mismatch-mode positions
+explicit mismatches from mismatch-mode positions
++ implicit mismatches from match-mode positions
 = 1 + 1
 = 2 mismatched bases
 ```
