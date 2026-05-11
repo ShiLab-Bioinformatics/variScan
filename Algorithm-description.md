@@ -187,7 +187,7 @@ mismatch-mode positions:
   3 total positions - 1 explicit mismatch = 2 implicit matches
 ```
 
-The total matched-base count of this read at the 50th base in `seq 137` is:
+The total matched-base count of this read when it is mapped to the 50th-54th bases in `seq 137` is:
 
 ```text
 explicit matches from match-mode positions
