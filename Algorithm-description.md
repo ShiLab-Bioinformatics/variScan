@@ -241,4 +241,4 @@ independent read alignments. This is effective because reads do not depend on
 one another after the reference index has been constructed.
 
 # Determining Final Alignment Target for Read Pairs
-Each end in the input read pair are aligned to all reference sequences individually using the algorithm described above. Among all reference sequences, the one with the highest total number of matched bases across both ends is selected as the final alignment target of the read pair, provided that at least one end has three or fewer mismatches at its best alignment position. Read pairs with multiple equally optimal reference alignments are classified as unmappable to avoid ambiguity.
+Each end in the input read pair is aligned to all reference sequences individually using the algorithm described above. Among all reference sequences, the one with the highest total number of matched bases across both ends is selected as the final alignment target of the read pair, provided that at least one end has three or fewer mismatches at its best alignment position. Read pairs with multiple equally optimal reference alignments are classified as unmappable to avoid ambiguity.
