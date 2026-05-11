@@ -123,11 +123,11 @@ Suppose the library contains 1,000 reference sequences and this read is tested
 at start position 50. The five query bases are therefore compared with reference
 positions 50 to 54 across all 1,000 reference sequences at the same time.
 
-Assume the query base `A` is common at positions 50, 51, and 54. For those 3
+Assume the query base `A` is common at positions 50, 51, and 54 in these 1000 reference sequences. For those 3
 positions, the program uses `mismatch mode`: it records only the few references
 that do not have `A`, and it treats all other reference sequences as implicit matches.
 
-Now assume the query base `A` is rare at positions 52 and 53. For those 2
+Now assume the query base `A` is rare at positions 52 and 53 in these 1000 reference sequences. For those 2
 positions, the program uses `match mode`: it records only the few reference sequences that
 do have `A`, and it treats all other references as implicit mismatches.
 
