@@ -187,7 +187,7 @@ mismatch-mode positions:
   3 total positions - 1 explicit mismatch = 2 implicit matches
 ```
 
-The total matched-base count of this read when it is mapped to the 50th-54th bases in `seq 137` is:
+Hence, the total matched-base count of this read when it is mapped to the 50th-54th bases in `seq 137` is:
 
 ```text
 explicit matches from match-mode positions
@@ -211,9 +211,8 @@ while avoiding updates to long posting lists.
 
 ## Choosing the Best Start for Each Reference
 
-For each candidate start, the program accumulates a score for every active
-reference. After all useful bases for that start have been processed, the score
-is compared with the current best score for the same reference.
+For each candidate start, the program accumulates a score for every 
+reference sequence. After all overlapping bases for that candidate start have been compared between read and all reference sequences, each score is compared with the best scores for each reference sequence.
 
 A candidate start becomes the new best placement for a reference if:
 
@@ -245,9 +244,9 @@ matches already accumulated + remaining unprocessed bases
 ```
 
 This bound is optimistic because it assumes that every remaining base will
-match. If the upper bound is lower than the reference's current best matched
+match. If the upper bound is lower than the reference sequence's current best matched
 count, then the current start cannot improve that reference's best result. That
-reference is marked as stopped for the current start.
+reference is marked as excluded for the current candidate start.
 
 Once all valid references have stopped, the candidate start is abandoned
 immediately. Candidate starts whose overlap length is already too short to beat
