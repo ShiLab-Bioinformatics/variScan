@@ -61,7 +61,7 @@ base `A/C/G/T`, the index stores two posting lists:
 Conceptually, the index has the following structure:
 
 ```text
-[match or mismatch] -> [reference position] -> [base] -> [reference IDs]
+[match or mismatch] -> [reference position] -> [base] -> [reference sequence IDs]
 ```
 
 For example, suppose that at reference position 50 most reference sequences
@@ -92,7 +92,7 @@ one.
 
 ## Simultaneous Match and Mismatch Counting
 
-During alignment, a read is placed at a candidate start position. Only the
+During alignment, a read is placed at a __candidate start__ position. Only the
 overlapping part of the read and reference is evaluated, so partial overlaps
 near reference ends are also supported.
 
