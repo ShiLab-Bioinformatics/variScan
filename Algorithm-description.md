@@ -1,8 +1,7 @@
 # Positional Index Alignment Algorithm
 
 This program aligns short reads against a library of thousands of closely
-related reference sequences, such as mutated variants of the same amplicon,
-barcode, or genomic locus.
+related reference sequences. 
 
 The algorithm does not perform full dynamic programming alignment and does not
 model insertions or deletions. Instead, it searches for the best ungapped
@@ -55,8 +54,8 @@ To support this batched scoring, the program builds a positional inverted index
 over the equal-length reference sequences. For each reference position and each
 base `A/C/G/T`, the index stores two posting lists:
 
-- references that match that base at the position, and
-- references that mismatch that base at the position.
+- reference sequence IDs that match that base at the position, and
+- reference sequence IDs that mismatch that base at the position.
 
 Conceptually, the index has the following structure:
 
