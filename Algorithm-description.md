@@ -68,15 +68,15 @@ contain `A`, while only a small number contain `T`, `G`, or `C`. The index for
 that position would look conceptually like this:
 
 ```text
-'matched'    => 'A' => ['seq 001', 'seq 002', ...]   (nearly 1000 items)
-'matched'    => 'T' => ['seq 101', 'seq 302', ...]                   (very few items)
-'matched'    => 'G' => ['seq 221', 'seq 252', ...]                   (very few items)
-'matched'    => 'C' => ['seq 231', 'seq 288', ...]                   (very few items)
+'matched'    => 'A' => ['seq 001', 'seq 002', ...]      (nearly 1000 items)
+'matched'    => 'T' => ['seq 101', 'seq 302', ...]      (very few items)
+'matched'    => 'G' => ['seq 221', 'seq 252', ...]      (very few items)
+'matched'    => 'C' => ['seq 231', 'seq 288', ...]      (very few items)
 
 'mismatched' => 'A' => ['seq 101', 'seq 221', 'seq 231', ...]        (very few items)
-'mismatched' => 'T' => ['seq 001', 'seq 002', ...]   (nearly 1000 items)
-'mismatched' => 'G' => ['seq 001', 'seq 002', ...]   (nearly 1000 items)
-'mismatched' => 'C' => ['seq 001', 'seq 002', ...]   (nearly 1000 items)
+'mismatched' => 'T' => ['seq 001', 'seq 002', ...]      (nearly 1000 items)
+'mismatched' => 'G' => ['seq 001', 'seq 002', ...]      (nearly 1000 items)
+'mismatched' => 'C' => ['seq 001', 'seq 002', ...]      (nearly 1000 items)
 ```
 
 The `matched A` list is long because most reference sequences have `A` at this position.
