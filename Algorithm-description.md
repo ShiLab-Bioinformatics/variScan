@@ -235,9 +235,6 @@ counts matches and mismatches directly, and keeps the placement with the
 highest matched-base count. The same tie-breaker is used: if two placements have
 the same number of matches, the placement with fewer mismatches is preferred.
 
-Even in this direct-scanning path, the comparison exits early when the current
-placement can no longer exceed the best score already found.
-
 ## Parallel Execution and Output
 
 The program is parallelized across reads using worker goroutines. The reference
