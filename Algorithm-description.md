@@ -166,13 +166,11 @@ mismatches for this position when the final total is computed.
 
 ### Combining Explicit and Implicit Counts
 
-In this example, three read positions were scored in mismatch mode and two read
-positions were scored in match mode. The program combines explicit and implicit
-counts to obtain the final score for each reference sequences based on that. As described above,
+The program combines explicit and implicit counts to obtain the final matched/mismatched counts of this read to each reference sequences at that candidate start. As described above,
 
 ```text
-2 in the 5 read bases were compared on the match mode.
-3 in the 5 read bases were compared on the mismatch mode.
+2 in the 5 read bases were compared with the reference sequences on the match mode.
+3 in the 5 read bases were compared with the reference sequences on the mismatch mode.
 ```
 
 For example, suppose `seq 137` has:
@@ -192,7 +190,7 @@ mismatch-mode positions:
   3 total positions - 1 explicit mismatch = 2 implicit matches
 ```
 
-Hence, the total matched-base count of this read when it is mapped to the 50th-54th bases in `seq 137` is:
+Hence, the total matched-base count in `seq 137` is:
 
 ```text
 explicit matches from match-mode positions
